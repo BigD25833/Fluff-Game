@@ -3,70 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Iceland&family=Instrument+Serif:ital@0;1&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js"></script>
     <title>Document</title>
 </head>
 <body>
-    <div id="root">
+    <div id="container">
         <div class="game-play">
-            <header>
-                <h1></h1>
-                <nav></nav>
-            </header>
             <div class="player" id="player-2">
-                <div class="player-img">
-                    <img src="" alt="">
-                    <h2></h2>
-                </div>
+                <img src="images\IMG_E5742.JPG" alt="">
+                <h2>Evelyn</h2>                
                 <div class="dice-bids">
-                    <i class="fa-solid fa-square-virus fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-two fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-three fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-four fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-five fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-six fa-2xl" style="color: rgb(188, 43, 7);"></i>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                 </div>
             </div>
+            <nav>
+                <button class="button">INSTRUCTIONS</button>
+                <button class="button">STATS</button>
+                <button class="button">QUIT</button>
+            </nav>
             <div class="player" id="player-1">
-                <div class="player-img">
-                    <img src="" alt="">
-                    <h2></h2>
-                </div>
+                <img src="images\IMG_E5717.JPG" alt="">
+                <h2>Matthew</h2>
                 <div class="dice-bids">
-                    <i class="fa-solid fa-square-virus fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-two fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-three fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-four fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-five fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-six fa-2xl" style="color: rgb(188, 43, 7);"></i>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                 </div>
             </div>
-            <div class="center"></div>
+            <button class="center button">ROLL!</button>
             <div class="player" id="player-3">
-                <div class="player-img">
-                    <img src="" alt="">
-                    <h2></h2>
-                </div>
+                <img src="images\IMG_6743.jpg" alt="">
+                <h2>Mama</h2>
                 <div class="dice-bids">
-                    <i class="fa-solid fa-square-virus fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-two fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-three fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-four fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-five fa-2xl" style="color: rgb(188, 43, 7);"></i>
-                    <i class="fa-solid fa-dice-six fa-2xl" style="color: rgb(188, 43, 7);"></i>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                 </div>
             </div>
             <div class="main-player">
-                <div class="dice-bids"></div>
+                <div class="dice-bids">
+                    <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-dice-two" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-dice-three" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-dice-four" style="color: rgb(188, 43, 7);"></i></div>
+                    <div class="die"><i class="fa-solid fa-dice-five" style="color: rgb(188, 43, 7);"></i></div>
+                </div>
                 <div class="controls">
-                    <button class="fluff"></button>
-                    <button class="plus-minus"></button>
-                    <div class="display"></div>
-                    <button class="plus-minus"></button>
-                    <select name="" id=""></select>
-                    <button class="bid"></button>
+                    <button class="fluff button">Fluff</button>
+                    <div id="bid-area">
+                        <h4>Make a bid</h4>
+                        <div id="bid-buttons">
+                            <button class="minus button">-</button>
+                            <div class="display">1</div>
+                            <button class="plus button">+</button>
+                            <div class="dice-bids">
+                                <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                                <span id="pop-up">^</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="bid button">Bid</button>
                 </div>
             </div>
 
