@@ -215,3 +215,40 @@ nav .button {
 nav .button:active {
     --inset-shadow: rgba(178, 179, 0, 0.8);
 }
+
+#pop-up {
+    cursor: pointer;
+}
+
+#pop-up:hover {
+    background-color:#8b5a2b;
+}
+
+.dice-bids .menu {
+    position: absolute;
+    bottom: 110px;
+}
+
+.menu .die {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.menu .die:hover {
+    background-color:#8b5a2b;
+    border-radius: 0.5rem;
+}
+
+.menu .die:active {
+    font-size: 2.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+#display {
+    min-width: 2.5rem;
+    text-align: center;
+
+}

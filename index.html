@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Iceland&family=Instrument+Serif:ital@0;1&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="styles.css">
+   <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js"></script>
     <title>Document</title>
 </head>
@@ -66,11 +66,18 @@
                     <div id="bid-area">
                         <h4>Make a bid</h4>
                         <div id="bid-buttons">
-                            <button class="minus button">-</button>
-                            <div class="display">1</div>
-                            <button class="plus button">+</button>
+                            <button id="minus" class="minus button">-</button>
+                            <div id="display">1</div>
+                            <button id="plus" class="plus button">+</button>
                             <div class="dice-bids">
-                                <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                                <div id="die-bid" class="die"><i class="fa-solid fa-dice-two" style="color: rgb(188, 43, 7);"></i></div>
+                                <div id="menu" class=" dice-bids menu hidden">
+                                    <div data-die="two" class="die"><i class="fa-solid fa-dice-two" style="color: rgb(188, 43, 7);"></i></div>
+                                    <div data-die="three" class="die"><i class="fa-solid fa-dice-three" style="color: rgb(188, 43, 7);"></i></div>
+                                    <div data-die="four" class="die"><i class="fa-solid fa-dice-four" style="color: rgb(188, 43, 7);"></i></div>
+                                    <div data-die="five" class="die"><i class="fa-solid fa-dice-five" style="color: rgb(188, 43, 7);"></i></div>
+                                    <div data-die="six" class="die"><i class="fa-solid fa-dice-six" style="color: rgb(188, 43, 7);"></i></div>
+                                </div>
                                 <span id="pop-up">^</span>
                             </div>
                         </div>
