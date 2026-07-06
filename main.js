@@ -47,9 +47,12 @@ const valueOfDieBid = dieBid.dataset.menuDie;
 //rolling dice
 
 class DiceRoll {
-    constructor(numOfDice) {
+    constructor(numOfDice, playersDiceFace) {
         this.numOfDice = numOfDice;
-        this.rollDice(); 
+        this.playersDiceFace = playersDiceFace;
+        this.rollDice();
+        this.sortDice();
+        this.calculateProbabilities(); 
     }
     static dicePool = [
         {value: 'wild', display: 'fa-solid fa-square-virus'},
@@ -58,7 +61,7 @@ class DiceRoll {
         {value: 'four', display: 'fa-solid fa-dice-four'}, 
         {value: 'five', display: 'fa-solid fa-dice-five'}, 
         {value: 'six', display: 'fa-solid fa-dice-six'}]; 
-    rollDice = () => {
+    rollDice() {
        this.diceRolledValues = [];
        this.diceRolledFaces = [];
        for (let i = 0; i < this.numOfDice; i++) {
@@ -67,30 +70,164 @@ class DiceRoll {
         this.diceRolledValues.push(dieRolled.value);
         this.diceRolledFaces.push(dieRolled.display);
        }
+       gameState.totalDiceValues.totalDice += this.numOfDice;
     }
-    updateDisplay = (playerName, boxName) => {
-        const diceArray  =  Array.from(document.querySelectorAll(playerName));
-        const boxArray = Array.from(document.querySelectorAll(boxName));
+    updateDisplay()  {
+        const diceArray  = document.querySelectorAll(this.playersDiceFace);
         for (let i = 0; i < this.numOfDice; i++) {
             diceArray[i].className = this.diceRolledFaces[i];
         }
     }
+    sortDice() {
+        this.diceValues = {
+            wild: 0,
+            two: 0,
+            three: 0,
+            four: 0,
+            five: 0,
+            six: 0
+        }
+        this.diceRolledValues.forEach((die) => {
+            this.diceValues[die] += 1;
+            gameState.totalDiceValues[die] += 1;
+        })
+   
+    }
+    calculateProbabilities() {
+        const probabilityFactor = (gameState.totalDiceValues.totalDice - this.numOfDice) / 3;
+        this.probabilityIndex = {
+            two: Math.ceil(this.diceValues.wild + this.diceValues.two + probabilityFactor),
+            three: Math.ceil(this.diceValues.wild + this.diceValues.three + probabilityFactor),
+            four: Math.ceil(this.diceValues.wild + this.diceValues.four + probabilityFactor),
+            five: Math.ceil(this.diceValues.wild + this.diceValues.five + probabilityFactor),
+            six: Math.ceil(this.diceValues.wild + this.diceValues.six + probabilityFactor)
+        }
+        
+
+    }
+  
+
 }
 
+const playerAttributes = ['strong bidder', 'normal bidder', 'weak bidder', 'strong fluffer', 'regular fluffer', 'weak fluffer', 'regular bluffer', 'strong bluffer']
+
+class Player {
+    constructor(playerName, playersDiceFace) {
+        this.playerName = playerName;
+        this.playersDiceFace = playersDiceFace;
+        this.playerAttributes = [];
+    }
+    numOfDice = 5;
+    loseDie(diceLost) {
+        this.numOfDice -= diceLost;
+        const diceArray = document.querySelector(`${this.playerName} .dice-bids`).children;
+        for (let i = 1; i <= diceLost; i++) {
+            diceArray[diceArray.length - 1].remove();
+        }
+    }
+    bids = []
+    chooseAttribute() {
+        const randomIndex = Math.floor(Math.random() * 20);
+        return this.playerAttributes[randomIndex];
+    }
+
+    evaluateBid(currentBid, currentRoll) {
+    const riskFactor = currentRoll.probabilityIndex[currentBid.value] - currentBid.number - ((20 - gameState.totalDiceValues.totalDice) * 0.2);
+    const currentAttribute = this.chooseAttribute();
+    if (currentBid.number <= (currentRoll.diceValues[currentBid.value]) + currentRoll.diceValues.wild) {
+        this.makeBid();
+    } else if (currentBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + currentRoll.diceValues[currentBid.value] + currentRoll.diceValues.wild)) {
+        this.fluff();
+    } else if (riskFactor >= 2) {
+        this.makeBid();
+    } else if (riskFactor === 1) {
+        if (currentAttribute === 'strong fluffer') {
+            this.fluff();
+        } else if (currentAttribute === 'regular fluffer') {
+            const randomNumber = Math.floor(Math.random * 4);
+            if (randomNumber === 0) {
+                this.fluff();
+            } else {
+                this.makeBid();
+            }
+        } else if (currentAttribute === 'weak fluffer') {
+            this.makeBid();
+        }
+    } else if (riskFactor === 0) {
+        if (currentAttribute === 'strong fluffer') {
+            this.fluff();
+        } else if (currentAttribute === 'regular fluffer') {
+            const randomNumber = Math.floor(Math.random() * 2);
+            if (randomNumber === 0) {
+                this.fluff();
+            } else if (randomNumber === 1) {
+                this.makeBid();
+            }
+        } else if (currentAttribute === 'weak fluffer') {
+            this.makeBid();
+        }      
+    } else if (riskFactor === -1) {
+        if (currentAttribute === 'strong fluffer') {
+            this.fluff();
+        } else if (currentAttribute === 'regular fluffer') {
+            const randomNumber = Math.floor(Math.random() * 4);
+            if (randomNumber === 0) {
+                this.makeBid();
+            } else {
+                this.fluff();
+            }
+        } else if (currentAttribute === 'weak fluffer') {
+            this.makeBid();
+        }     
+    } else if (riskFactor <= -2) {
+        this.fluff();
+    }
+    
+    }
+    makeBid() {
+        //high first bid adds +2; bid that jumps up by 3 or more adds 2
+
+    }
+
+};
 
 
 
- 
+const gameState = {
+    totalDiceValues: {
+        totalDice: 0,
+        wild: 0,
+        two: 0,
+        three: 0,
+        four: 0,
+        five: 0,
+        six: 0
+    },
+    currentBid: null
+
+
+}
 
 const rollButton = document.getElementById('roll');
 rollButton.addEventListener('click', () => {
-    const mainPlayerRoll = new DiceRoll(5);
-    mainPlayerRoll.updateDisplay('.main-player i', '.main-player .die');
-    const player1Roll = new DiceRoll(5);
-    player1Roll.updateDisplay('#player-1 i', '#player-1 .die');
-    const player2Roll = new DiceRoll(5);
-    player2Roll.updateDisplay('#player-2 i', '#player-2 .die');
-    const player3Roll = new DiceRoll(5);
-    player3Roll.updateDisplay('#player-3 i', '#player-3 .die');
+    const mainPlayer = new Player('#main-player', '#main-player i');
+    const newRoll = new DiceRoll(mainPlayer.numOfDice, mainPlayer.playersDiceFace);
+    newRoll.updateDisplay();
+    const player1 =  new Player('#player-1', '#player-1 i');
+    const newRoll2 = new DiceRoll(player1.numOfDice, player1.playersDiceFace);
+    newRoll2.updateDisplay();
+    const player2 = new Player('#player-2', '#player-2 i');
+    const newRoll3 = new DiceRoll(player2.numOfDice, player2.playersDiceFace);
+    newRoll3.updateDisplay();
+    const player3 = new Player('#player-3', '#player-3 i');
+    const newRoll4 = new DiceRoll(player3.numOfDice, player3.playersDiceFace);
+    newRoll4.updateDisplay();
+
+
 
 })
+
+// bid is an object {number: 1, value: 'two'}
+
+
+
