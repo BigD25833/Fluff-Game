@@ -6,4 +6,8 @@ function bidFactory(number, value, player) {
     }
 }
 
-export {bidFactory}
+function getRandomNumber(num) {
+    return Math.floor(Math.random() * num);
+}
+
+export {bidFactory, getRandomNumber}

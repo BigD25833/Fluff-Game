@@ -1,4 +1,4 @@
-import {bidFactory} from 'utilities.js';
+import {bidFactory, getRandomNumber} from './utilities.js';
 
 
 class DiceRoll {
@@ -24,7 +24,6 @@ class DiceRoll {
         this.diceRolledValues.push(dieRolled.value);
         this.diceRolledFaces.push(dieRolled.display);
        }
-       gameState.totalDiceValues.totalDice += this.numOfDice;
     }
     sortDice() {
         this.diceValues = {
@@ -64,6 +63,7 @@ class Player {
     bids = [];
     loseDie(diceLost) {
         this.numOfDice -= diceLost;
+        gameState.totalDiceValues.totalDice -= diceLost;
         loseDieUI(this.playerName, diceLost);
     }
     chooseAttribute() {
@@ -82,11 +82,11 @@ class Player {
             this.fluff();
         } else if (riskFactor >= 2) {
             this.makeBid();
-        } else if (riskFactor === 1) {
+        } else if (riskFactor < 2 && riskFactor > 0) {
             if (currentAttribute === 'strong fluffer') {
                 this.fluff();
             } else if (currentAttribute === 'regular fluffer') {
-                const randomNumber = Math.floor(Math.random * 4);
+                const randomNumber = getRandomNumber(4);
                 if (randomNumber === 0) {
                     this.fluff();
                 } else {
@@ -99,7 +99,7 @@ class Player {
             if (currentAttribute === 'strong fluffer') {
                 this.fluff();
             } else if (currentAttribute === 'regular fluffer') {
-                const randomNumber = Math.floor(Math.random() * 2);
+                const randomNumber = getRandomNumber(2);
                 if (randomNumber === 0) {
                     this.fluff();
                 } else if (randomNumber === 1) {
@@ -108,11 +108,11 @@ class Player {
             } else if (currentAttribute === 'weak fluffer') {
                 this.makeBid();
             }      
-        } else if (riskFactor === -1) {
+        } else if (riskFactor < 0 && riskFactor > -2) {
             if (currentAttribute === 'strong fluffer') {
                 this.fluff();
             } else if (currentAttribute === 'regular fluffer') {
-                const randomNumber = Math.floor(Math.random() * 4);
+                const randomNumber = getRandomNumber(4);
                 if (randomNumber === 0) {
                     this.makeBid();
                 } else {
@@ -126,16 +126,21 @@ class Player {
         }
     }    
     makeBid(currentBid) {
+        const currentAttribute = 'bluffer';
         const diceArray = ['two', 'three', 'four', 'five', 'six'];
-        const minimumRiskArray = [];
+        let finalBid;
         if (currentBid) {
+            const minimumRiskArray = [];
+            const bidNumbers = [];
             for (let i = 0; i < diceArray.length; i++) {
                 if (diceArray.indexOf(currentBid.value) < diceArray.indexOf(diceArray[i])) {
-                    const testBid = this.bidFactory(currentBid.number, diceArray[i]);
-                    minimumRiskArray.push(this.calculateRiskFactor(testBid, this.currentRoll));
+                    const testBid = bidFactory(currentBid.number, diceArray[i]);
+                    minimumRiskArray.push(this.calculateRiskFactor(testBid));
+                    bidNumbers.push(currentBid.number)
                 } else {
-                    const testBid = this.bidFactory((currentBid.number + 1), diceArray[i]);
-                    minimumRiskArray.push(this.calculateRiskFactor(testBid, this.currentRoll));
+                    const testBid = bidFactory((currentBid.number + 1), diceArray[i]);
+                    minimumRiskArray.push(this.calculateRiskFactor(testBid));
+                    bidNumbers.push(currentBid.number + 1);
                 }
             }
             const maxBids = [];
@@ -143,29 +148,140 @@ class Player {
             const remainingBids = [];
             const max = Math.max(...minimumRiskArray);
             const min = Math.min(...minimumRiskArray);
-            for (let i = 0; i < minimumRiskArray.length; i++) {
+            for (let i = 0; i < diceArray.length; i++) {
                 if (minimumRiskArray[i] === max) {
-                    maxBids.push(diceArray[i]);
+                    maxBids.push(bidFactory(bidNumbers[i], diceArray[i]));
                 } else if (minimumRiskArray[i] === min) {
-                    minBids.push(diceArray[i]);
+                    minBids.push(bidFactory(bidNumbers[i], diceArray[i]));
                 } else {
-                    remainingBids.push(diceArray[i]);
+                    remainingBids.push(bidFactory(bidNumbers[i], diceArray[i]));
                 }
             }
+            if (currentAttribute === 'bluffer') {
+                if (this.bids.length && (currentBid.number >= 7)) {
+                   const randomIndex = getRandomNumber(maxBids.length);
+                    finalBid = maxBids[randomIndex]; 
+                } else {
+                    const randomIndex = getRandomNumber(minBids.length);
+                    finalBid = minBids[randomIndex];
+                }
+            } else if (currentAttribute === 'regular bidder') {
+                const randomIndex = getRandomNumber(maxBids.length);
+                finalBid = maxBids[randomIndex];
+                if (this.calculateRiskFactor(finalBid) >= 3) {
+                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
+                }
+            } else if (currentAttribute === 'strong bidder') {
+                const randomIndex = getRandomNumber(remainingBids.length);
+                finalBid = remainingBids[randomIndex];
+                if (this.calculateRiskFactor(finalBid) >= 2) {
+                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
+                }
+            }
+            if (this.calculateRiskFactor(finalBid) <= -2) {
+                this.fluff()
+            } else {
+                finalBid.player = this.playerName;
+                gameState.currentBid = finalBid;
+                if ((finalBid.number - currentBid.number) >= 3) {
+                    gameState.playerArray.forEach((player) => {
+                        if (player.playerName !== finalBid.player) {
+                        player.currentRoll.probabilityIndex[finalBid.value] += 2;
+                        }
+                    })
+                } else {
+                    gameState.playerArray.forEach((player) => {
+                        if (player.playerName !== finalBid.player) {
+                        player.currentRoll.probabilityIndex[finalBid.value] += 1;
+                        }
+                    })
+                }
 
+            }  
         } else {
-        
+            const probabilityArray = [];
+            for (let i = 0; i < diceArray.length; i ++) {
+                probabilityArray.push(this.currentRoll.probabilityIndex[diceArray[i]]);
+            }
+            const maxBids = [];
+            const minBids = [];
+            const remainingBids = [];
+            const max = Math.max(...probabilityArray);
+            const min = Math.min(...probabilityArray);
+            for (let i = 0; i < diceArray.length; i++) {
+                if (probabilityArray[i] === max) {
+                    maxBids.push(bidFactory(probabilityArray[i], diceArray[i]));
+                } else if (probabilityArray[i] === min) {
+                    minBids.push(bidFactory(probabilityArray[i], diceArray[i]));
+                } else {
+                    remainingBids.push(bidFactory(probabilityArray[i], diceArray[i]));
+                }
 
+            }
+            if (currentAttribute === 'bluffer') {
+                const randomIndex = getRandomNumber(minBids.length);
+                finalBid = minBids[randomIndex];
+                const randomNumber = getRandomNumber(4);
+                if (randomNumber === 0) {
+                    finalBid.number += getRandomNumber(4);
+                }
+                 if (finalBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + this.currentRoll.diceValues[finalBid.value] + this.currentRoll.diceValues.wild)) {
+                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
+                } 
+            } else if (currentAttribute === 'regular bidder') {
+                const randomIndex = getRandomNumber(maxBids.length);
+                finalBid = maxBids[randomIndex];
+                const randomNumber = getRandomNumber(5);
+                if (randomNumber = 0) {
+                    finalBid.number += getRandomNumber(2);
+                } else {
+                    finalBid.number -= getRandomNumber(4) + 1;
+                }
+                if (finalBid.number <= 0) {
+                    finalBid.number = 1;
+                }
+                if (finalBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + this.currentRoll.diceValues[finalBid.value] + this.currentRoll.diceValues.wild)) {
+                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
+                }
+            } else if (currentAttribute === 'strong bidder') {
+                const randomIndex = getRandomNumber(remainingBids.length);
+                finalBid = remainingBids[randomIndex];
+                const randomNumber = getRandomNumber(5);
+                if (randomNumber = 0) {
+                    finalBid.number += getRandomNumber(2);
+                } else {
+                    finalBid.number -= getRandomNumber(4) + 1;
+                }
+                if (finalBid.number <= 0) {
+                    finalBid.number = 1;
+                }
+                if (finalBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + this.currentRoll.diceValues[finalBid.value] + this.currentRoll.diceValues.wild)) {
+                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
+                }
+            }
+            finalBid.player = this.playerName;
+            gameState.currentBid = finalBid;
+            if ((finalBid.number) >= 7) {
+                gameState.playerArray.forEach((player) => {
+                    if (player.playerName !== finalBid.player) {
+                    player.currentRoll.probabilityIndex[finalBid.value] += 2;
+                    }
+                })
+            } else {
+                gameState.playerArray.forEach((player) => {
+                    if (player.playerName !== finalBid.player) {
+                    player.currentRoll.probabilityIndex[finalBid.value] += 1;
+                    }
+                })
+            }
         }
     }
 
 }
 
-
-
 const gameState = {
     totalDiceValues: {
-        totalDice: 0,
+        totalDice: 20,
         wild: 0,
         two: 0,
         three: 0,
@@ -174,8 +290,21 @@ const gameState = {
         six: 0
     },
     currentBid: null,
-    diceStart: null,
+    diceStart: 20,
     playerArray: ['main player object', 'player1 object', 'player2 object', 'player3 object']
 
 
 }
+
+
+    const mainPlayer = new Player('#main-player', '#main-player i');
+    mainPlayer.currentRoll = new DiceRoll(mainPlayer.numOfDice);
+    const player1 =  new Player('#player-1', '#player-1 i');
+    player1.currentRoll = new DiceRoll(player1.numOfDice, player1.playersDiceFace);
+    const player2 = new Player('#player-2', '#player-2 i');
+    player2.currentRoll = new DiceRoll(player2.numOfDice, player2.playersDiceFace);
+    const player3 = new Player('#player-3', '#player-3 i');
+    player3.currentRoll = new DiceRoll(player3.numOfDice, player3.playersDiceFace);
+    
+    const newBid = bidFactory(5, 'three');
+    mainPlayer.makeBid();
