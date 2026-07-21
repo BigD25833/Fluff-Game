@@ -1,6 +1,6 @@
 import {bidFactory, getRandomNumber} from './utilities.js';
 
-
+// a new instance of the DiceRoll class will be created on the currentRoll property for each player object on every roll
 class DiceRoll {
     constructor(numOfDice) {
         this.numOfDice = numOfDice;
@@ -51,6 +51,8 @@ class DiceRoll {
         }
     }
 }
+
+
 
 class Player {
     constructor(playerName, playersDiceFace) {
@@ -296,6 +298,38 @@ const gameState = {
 
 }
 
+function getPlayerAttribute(player, action) {
+    const randomNumber = getRandomNumber(10);
+    let attribute;
+    if (action === 'evaluate') {
+        if (player === 'daniel') {
+            if (randomNumber === 0) {
+                attribute = 'strong fluffer';
+            } else if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                attribute = 'weak fluffer';
+            } else {
+                attribute = 'regular fluffer'
+            }
+    
+        } else if (player === 'matthew') {
+
+        } else if (player === 'evelyn') {
+
+        } else if (player === 'mama') {
+
+        }
+    } else if (action === 'bid') {
+        if (player === 'daniel') {
+    
+        } else if (player === 'matthew') {
+
+        } else if (player === 'evelyn') {
+
+        } else if (player === 'mama') {
+
+        }
+    }
+}
 
     const mainPlayer = new Player('#main-player', '#main-player i');
     mainPlayer.currentRoll = new DiceRoll(mainPlayer.numOfDice);
@@ -308,3 +342,9 @@ const gameState = {
     
     const newBid = bidFactory(5, 'three');
     mainPlayer.makeBid();
+
+
+
+
+
+    /* Maybe refactor the bidding  */
