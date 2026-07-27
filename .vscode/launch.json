@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Launch Program",
-            "program": "${workspaceFolder}/modules/gameLogic.js",
+            "program": "${workspaceFolder}/modules/gameObjects.js",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"

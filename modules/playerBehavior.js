@@ -9,6 +9,11 @@ const playerProfiles = {
             {weight: 4, value: 'bluffer'},
             {weight: 7, value: 'regular bidder'},
             {weight: 5, value: 'strong bidder'}
+        ],
+        tendency: [
+                {weight: 3, value: 'aggressive'},
+                {weight: 8, value: 'conservative'},
+                {weight: 1, value: 'risky'}
         ]
     },
     matthew: {
@@ -21,8 +26,13 @@ const playerProfiles = {
             {weight: 4, value: 'bluffer'},
             {weight: 7, value: 'regular bidder'},
             {weight: 5, value: 'strong bidder'}
+        ],
+        tendency: [
+                {weight: 3, value: 'aggressive'},
+                {weight: 8, value: 'conservative'},
+                {weight: 1, value: 'risky'}
         ]
-    } , 
+    }, 
     evelyn: {
         evaluateBid: [
             {weight: 3, value: 'strong fluffer'},
@@ -33,6 +43,11 @@ const playerProfiles = {
             {weight: 4, value: 'bluffer'},
             {weight: 7, value: 'regular bidder'},
             {weight: 5, value: 'strong bidder'}
+        ],
+        tendency: [
+                {weight: 3, value: 'aggressive'},
+                {weight: 8, value: 'conservative'},
+                {weight: 1, value: 'risky'}
         ]
     },
     mama: {
@@ -45,43 +60,13 @@ const playerProfiles = {
             {weight: 4, value: 'bluffer'},
             {weight: 7, value: 'regular bidder'},
             {weight: 5, value: 'strong bidder'}
+        ],
+        tendency: [
+                {weight: 3, value: 'aggressive'},
+                {weight: 8, value: 'conservative'},
+                {weight: 1, value: 'risky'}
         ]
     }
 }
 
-const valueTendencies = {
-    evaluateBid: {
-        'strong fluffer': [
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()}
-        ],
-        'regular fluffer': [
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()}
-        ],
-        'weak fluffer': [
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()}
-        ]
-    },
-    makeBid: {
-        'bluffer': [
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()}
-        ],
-        'regular bidder': [
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()}
-        ],
-        'strong bidder': [
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()},
-            {weight: 2, value: function1()}
-        ]
-    }
-}
+export {playerProfiles}
