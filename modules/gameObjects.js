@@ -224,129 +224,42 @@ class Player {
         return finalBid;
     }
     updateGameWithNewBid(finalBid) {
+        if ((!gameState.currentBid && finalBid.number >= 8) || (finalBid.number - gameState.currentBid.number) >= 3) {
+            gameState.playerArray.forEach((player) => {
+                if (player.playerName !== finalBid.player) {
+                    player.currentRoll.probabilityIndex[finalBid.value] += 2;
+                }
+            })
+        } else {
+            gameState.playerArray.forEach((player) => {
+                if (player.playerName !== finalBid.player) {
+                    player.currentRoll.probabilityIndex[finalBid.value] += 1;
+                }
+            })
+        }
         gameState.currentBid = finalBid;
-    } 
-
-/*
+        this.bids.push(finalBid);
+    }
     makeBid(currentBid) {
         const currentBehavior = getWeightedBehavior(playerProfiles[this.playerName].makeBid);
-        const currentTendency = getWeightedBehavior(playerProfiles[this.playerName.tendency]);
+        const currentTendency = getWeightedBehavior(playerProfiles[this.playerName].tendency);
+        let finalBid;
         if (currentBid) {
-            const legalBids = this.generateLegalNextBids(currentBid);
-            const chosenBids = this.chooseBidByBehavior(currentBehavior, legalBids);
+            const possibleBids = this.generateLegalNextBids(currentBid);
+            const chosenBids = this.chooseBidByBehavior(currentBehavior, possibleBids);
             if (chosenBids === 'fluff') {
                 this.fluff();
                 return;
-            }
-            const finalBid = this.refineNextBidByTendency(currentTendency, chosenBids);
-
-
-          
-
-
-
-           
-
-            //once the final bid is decided, update gameState the other players' probability index based on the bids number and value    
             } else {
-                finalBid.player = this.playerName;
-                gameState.currentBid = finalBid;
-                if ((finalBid.number - currentBid.number) >= 3) {
-                    gameState.playerArray.forEach((player) => {
-                        if (player.playerName !== finalBid.player) {
-                        player.currentRoll.probabilityIndex[finalBid.value] += 2;
-                        }
-                    })
-                } else {
-                    gameState.playerArray.forEach((player) => {
-                        if (player.playerName !== finalBid.player) {
-                        player.currentRoll.probabilityIndex[finalBid.value] += 1;
-                        }
-                    })
-                }
-
+                finalBid = this.refineNextBidByTendency(currentTendency, chosenBids);
             }
-            
-        //makes the first bid of the round    
         } else {
-            const probabilityArray = [];
-            for (let i = 0; i < diceArray.length; i ++) {
-                probabilityArray.push(this.currentRoll.probabilityIndex[diceArray[i]]);
-            }
-            const maxBids = [];
-            const minBids = [];
-            const remainingBids = [];
-            const max = Math.max(...probabilityArray);
-            const min = Math.min(...probabilityArray);
-            for (let i = 0; i < diceArray.length; i++) {
-                if (probabilityArray[i] === max) {
-                    maxBids.push(bidFactory(probabilityArray[i], diceArray[i]));
-                } else if (probabilityArray[i] === min) {
-                    minBids.push(bidFactory(probabilityArray[i], diceArray[i]));
-                } else {
-                    remainingBids.push(bidFactory(probabilityArray[i], diceArray[i]));
-                }
-
-            }
-            if (currentBehavior === 'bluffer') {
-                const randomIndex = getRandomNumber(minBids.length);
-                finalBid = minBids[randomIndex];
-                const randomNumber = getRandomNumber(4);
-                if (randomNumber === 0) {
-                    finalBid.number += getRandomNumber(4);
-                }
-                 if (finalBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + this.currentRoll.diceValues[finalBid.value] + this.currentRoll.diceValues.wild)) {
-                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
-                } 
-            } else if (currentBehavior === 'regular bidder') {
-                const randomIndex = getRandomNumber(maxBids.length);
-                finalBid = maxBids[randomIndex];
-                const randomNumber = getRandomNumber(5);
-                if (randomNumber = 0) {
-                    finalBid.number += getRandomNumber(2);
-                } else {
-                    finalBid.number -= getRandomNumber(4) + 1;
-                }
-                if (finalBid.number <= 0) {
-                    finalBid.number = 1;
-                }
-                if (finalBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + this.currentRoll.diceValues[finalBid.value] + this.currentRoll.diceValues.wild)) {
-                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
-                }
-            } else if (currentBehavior === 'strong bidder') {
-                const randomIndex = getRandomNumber(remainingBids.length);
-                finalBid = remainingBids[randomIndex];
-                const randomNumber = getRandomNumber(5);
-                if (randomNumber = 0) {
-                    finalBid.number += getRandomNumber(2);
-                } else {
-                    finalBid.number -= getRandomNumber(4) + 1;
-                }
-                if (finalBid.number <= 0) {
-                    finalBid.number = 1;
-                }
-                if (finalBid.number > ((gameState.totalDiceValues.totalDice - this.numOfDice) + this.currentRoll.diceValues[finalBid.value] + this.currentRoll.diceValues.wild)) {
-                    finalBid.number = this.currentRoll.probabilityIndex[finalBid.value];
-                }
-            }
-            finalBid.player = this.playerName;
-            gameState.currentBid = finalBid;
-            if ((finalBid.number) >= 7) {
-                gameState.playerArray.forEach((player) => {
-                    if (player.playerName !== finalBid.player) {
-                    player.currentRoll.probabilityIndex[finalBid.value] += 2;
-                    }
-                })
-            } else {
-                gameState.playerArray.forEach((player) => {
-                    if (player.playerName !== finalBid.player) {
-                    player.currentRoll.probabilityIndex[finalBid.value] += 1;
-                    }
-                })
-            }
+            const possibleBids = this.generatePossibleFirstBids();
+            const chosenBids = this.chooseBidByBehavior(currentBehavior, possibleBids);
+            finalBid = this.refineFirstBidByTendency(currentTendency, chosenBids);
         }
+        this.updateGameWithNewBid(finalBid);
     }
-*/
 }
 
 
@@ -369,13 +282,13 @@ const gameState = {
 
 
 
-    const mainPlayer = new Player('daniel', '#main-player i');
+    const mainPlayer = new Player('[data-player="daniel"]', '[data-player="daniel"] i');
     mainPlayer.currentRoll = new DiceRoll(mainPlayer.numOfDice);
-    const player1 =  new Player('#player-1', '#player-1 i');
+    const player1 =  new Player('[data-player="matthew"]', '[data-player="matthew"] i');
     player1.currentRoll = new DiceRoll(player1.numOfDice, player1.playersDiceFace);
-    const player2 = new Player('#player-2', '#player-2 i');
+    const player2 = new Player('[data-player="evelyn"]', '[data-player="evelyn"] i');
     player2.currentRoll = new DiceRoll(player2.numOfDice, player2.playersDiceFace);
-    const player3 = new Player('#player-3', '#player-3 i');
+    const player3 = new Player('[data-player="mama"]', '[data-player="mama"] i');
     player3.currentRoll = new DiceRoll(player3.numOfDice, player3.playersDiceFace);
     
     console.log(mainPlayer.currentRoll.diceValues);
