@@ -1,5 +1,5 @@
 const playerProfiles = {
-    daniel: {
+    Daniel: {
         evaluateBid: [
             {weight: 3, value: 'strong fluffer'},
             {weight: 6, value: 'regular fluffer'},
@@ -16,7 +16,7 @@ const playerProfiles = {
                 {weight: 1, value: 'risky'}
         ]
     },
-    matthew: {
+    Matthew: {
         evaluateBid: [
             {weight: 3, value: 'strong fluffer'},
             {weight: 6, value: 'regular fluffer'},
@@ -33,7 +33,7 @@ const playerProfiles = {
                 {weight: 1, value: 'risky'}
         ]
     }, 
-    evelyn: {
+    Evelyn: {
         evaluateBid: [
             {weight: 3, value: 'strong fluffer'},
             {weight: 6, value: 'regular fluffer'},
@@ -50,7 +50,7 @@ const playerProfiles = {
                 {weight: 1, value: 'risky'}
         ]
     },
-    mama: {
+    Mama: {
         evaluateBid: [
             {weight: 3, value: 'strong fluffer'},
             {weight: 6, value: 'regular fluffer'},

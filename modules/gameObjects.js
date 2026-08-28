@@ -56,9 +56,10 @@ class DiceRoll {
 
 
 class Player {
-    constructor(playerName, playersDiceFace) {
+    constructor(playerName, playersDice, playerAttributes) {
         this.playerName = playerName;
-        this.playersDiceFace = playersDiceFace;
+        this.playersDice = playersDice;
+        this.playerAttributes = playerAttributes;
     }
     currentRoll = null;
     numOfDice = 5;
@@ -110,7 +111,7 @@ class Player {
             } else if (currentBehavior === 'regular fluffer') {
                 getRandomNumber(4) === 0 ? this.makeBid() : this.fluff();
             } else if (currentBehavior === 'weak fluffer') {
-                this.makeBid();
+                this.makeBid(currentBid);
             }    
 
         } else if (riskFactor <= -2) {
@@ -227,13 +228,13 @@ class Player {
         if ((!gameState.currentBid && finalBid.number >= 8) || (finalBid.number - gameState.currentBid.number) >= 3) {
             gameState.playerArray.forEach((player) => {
                 if (player.playerName !== finalBid.player) {
-                    player.currentRoll.probabilityIndex[finalBid.value] += 2;
+                    player.currentRoll.probabilityIndex[finalBid.value] += 1.5;
                 }
             })
         } else {
             gameState.playerArray.forEach((player) => {
                 if (player.playerName !== finalBid.player) {
-                    player.currentRoll.probabilityIndex[finalBid.value] += 1;
+                    player.currentRoll.probabilityIndex[finalBid.value] += 0.75;
                 }
             })
         }
@@ -260,12 +261,19 @@ class Player {
         }
         this.updateGameWithNewBid(finalBid);
     }
+    fluff(currentBid) {
+        if ((gameState.totalDiceValues[currentBid.value] + gameState.totalDiceValues.wild) >= currentBid.value) {
+            this.loseDie(1);
+        } else {
+            currentBid.player.loseDie(1);
+        }
+    }
 }
 
 
 const gameState = {
     totalDiceValues: {
-        totalDice: 20,
+        totalDice: 0,
         wild: 0,
         two: 0,
         three: 0,
@@ -274,32 +282,9 @@ const gameState = {
         six: 0
     },
     currentBid: null,
-    diceStart: 20,
-    playerArray: ['main player object', 'player1 object', 'player2 object', 'player3 object']
+    playerArray: null
 
 
 }
 
-
-
-    const mainPlayer = new Player('[data-player="daniel"]', '[data-player="daniel"] i');
-    mainPlayer.currentRoll = new DiceRoll(mainPlayer.numOfDice);
-    const player1 =  new Player('[data-player="matthew"]', '[data-player="matthew"] i');
-    player1.currentRoll = new DiceRoll(player1.numOfDice, player1.playersDiceFace);
-    const player2 = new Player('[data-player="evelyn"]', '[data-player="evelyn"] i');
-    player2.currentRoll = new DiceRoll(player2.numOfDice, player2.playersDiceFace);
-    const player3 = new Player('[data-player="mama"]', '[data-player="mama"] i');
-    player3.currentRoll = new DiceRoll(player3.numOfDice, player3.playersDiceFace);
-    
-    console.log(mainPlayer.currentRoll.diceValues);
-    const firstBids = mainPlayer.generatePossibleFirstBids();
-  
-    const chosenBids = mainPlayer.chooseBidByBehavior('bluffer', firstBids);
-    
-    console.log(mainPlayer.refineFirstBidByTendency('aggressive', chosenBids));
-
-
-
-
-
-    /* Maybe refactor the bidding  */
+export {DiceRoll, Player, gameState}

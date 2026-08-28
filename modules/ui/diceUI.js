@@ -1,5 +1,5 @@
- function updateDisplay(currentRoll, diceFace) {
-    const diceArray = document.querySelectorAll(diceFace);
+ function updateDisplay(currentRoll, playersDice) {
+    const diceArray = document.querySelectorAll(playersDice);
     for (let i = 0; i < currentRoll.numOfDice; i++) {
         diceArray[i].className = currentRoll.diceRolledFaces[i];
     }

@@ -13,6 +13,42 @@
 </head>
 <body>
     <div id="container">
+        <div id="setup">
+            <h1>Game Setup</h1>
+            <form>
+                <h2>Choose Number of Players</h2>
+                <input required type="radio" name="number-of-players" id="3-player" value="3">
+                <label for="3-player">3 Players</label>
+                <input required checked type="radio" name="number-of-players" id="4-player" value="4">
+                <label for="4-player">4 Players</label>
+                <h2>Choose Your Opponents</h2>
+                <div id="opponents">
+                    <div class="opponent">
+                        <label for="opponent-1">Opponent 1:</label>
+                        <select required class="opponent-selector" name="opponent-1" id="opponent-1">
+                        </select>
+                    </div>
+                    <div class="opponent">
+                        <label for="opponent-2">Opponent 2:</label>
+                        <select  required class="opponent-selector" name="opponent-2" id="opponent-2">
+                        </select>
+                    </div>
+                    <div class="opponent" id="dynamic-option">
+                        <label for="opponent-3">Opponent 3:</label>
+                        <select required class="opponent-selector" name="opponent-3" id="opponent-3">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-buttons">
+                    <button class="button" id="reset" type="button">Reset</button>
+                    <button class="button" id="submit" type="submit">Play!</button>
+                </div>
+                
+        </form>
+        </div>
+        
+
+        <!--
         <div class="game-play">
             <div class="player" id="player-2" data-player="matthew">
                 <img src="images\IMG_E5742.JPG" alt="">
@@ -46,26 +82,32 @@
                 <div class="communications">
                     <div id="player-1-comm">
                         <div class="new-bids" data-bids="player-1">
-                            <div class="die">2<i class="fa-solid fa-dice-six" style="color: rgb(188, 43, 7);"></i></div>
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>  
                         </div>                        
                     </div>
                     <div id="player-2-comm">
                         <div class="new-bids" data-bids="player-2">
-                            <div class="die">2<i class="fa-solid fa-dice-six" style="color: rgb(188, 43, 7);"></i></div>
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>
                         </div>                        
                     </div>
                     <button class="button" id="next">NEXT</button>
                     <div id="player-3-comm">
                         <div class="new-bids" data-bids="player-3">
-                            <div class="die">2<i class="fa-solid fa-dice-six" style="color: rgb(188, 43, 7);"></i></div>
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>
                         </div>
                     </div>
                     <div id="main-player-comm" >
-                        
-                        
-                            
-                            
-                        
+                        <div class="new-bids" data-bids="main-player">
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>
+                        </div>         
                     </div>  
                 </div>
             </div>
@@ -113,7 +155,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> -->
      
         
     </div>
