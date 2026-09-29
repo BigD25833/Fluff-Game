@@ -7,14 +7,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Iceland&family=Instrument+Serif:ital@0;1&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-   <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js"></script>
     <title>Document</title>
 </head>
 <body>
     <div id="container">
         <div id="setup">
-            <h1>Game Setup</h1>
+            <h1>Game Setup <span class="information"><i class="fa-regular fa-circle-question"></i></span></h1>
+            <div class="instructions">
+                <h2>How to Play Fluff</h2>
+                <ol>
+                    <li>Players begin with five dice with a wild face instead of the one. Wilds automatically count as whatever dice value is currently being bid.</li>
+                    <li>To begin, all players roll their dice. The player with the most wilds goes first. If there is a tie, tied players reroll until one player has the most wilds.</li>
+                    <li>To start a round, all players roll their dice and keep them hidden from the other players. The player going first makes a bid which consists of a number and die value (2-6). The bid is an estimation of how many <strong>total dice</strong> of that value have been rolled.</li>
+                    <li>The next player has the option to either raise the bid or challenge the bid. In order to raise, each bid must be higher in number (e.g., three 4s to four 4s) or value (e.g., four 4s to four 5s)</li>
+                    <li>Play continues clockwises until a player challenges the bid and all the dice are revealed. If the actual number of dice is <strong>equal to or greater</strong> than the number bid, the challenger loses a die. If the actual number of dice is <strong>less than</strong> the number bid, the bidder loses a die.</li>
+                    <li>Players have to option to challenge a bid out of turn. If they are wrong, the challenger loses <strong>two</strong> dice. However, if they are right, the bidder still only loses one die.</li>
+                    <li>The player who lost a die in previous round starts the bidding for the next round. If a player loses their final die, they are out of the game and the player to their left starts the next round.</li>
+                    <li>The last player to have a die wins the game.</li>
+                </ol>
+            </div>
             <form>
                 <h2>Choose Number of Players</h2>
                 <input required type="radio" name="number-of-players" id="3-player" value="3">

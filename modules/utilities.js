@@ -25,5 +25,8 @@ function getWeightedBehavior(behaviors) {
     }
 }
 
+function sleep(delay) {
+    return new Promise(res => setTimeout(res, delay));
+}
 
-export {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior}
+export {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior, sleep}

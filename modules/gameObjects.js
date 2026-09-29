@@ -1,6 +1,7 @@
 import {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior} from './utilities.js';
 import {playerProfiles} from './playerBehavior.js';
 
+
 // a new instance of the DiceRoll class will be created on the currentRoll property of each player object on every roll
 class DiceRoll {
     constructor(numOfDice) {
@@ -242,8 +243,8 @@ class Player {
         this.bids.push(finalBid);
     }
     makeBid(currentBid) {
-        const currentBehavior = getWeightedBehavior(playerProfiles[this.playerName].makeBid);
-        const currentTendency = getWeightedBehavior(playerProfiles[this.playerName].tendency);
+        const currentBehavior = getWeightedBehavior(this.playerAttributes.makeBid);
+        const currentTendency = getWeightedBehavior(this.playerAttributes.tendency);
         let finalBid;
         if (currentBid) {
             const possibleBids = this.generateLegalNextBids(currentBid);
@@ -282,9 +283,41 @@ const gameState = {
         six: 0
     },
     currentBid: null,
-    playerArray: null
-
-
+    playerArray: [],
+    currentPlayerIndex: 0,
+    initiatePlayerObjects(players) {
+        players.forEach((player) => {
+            if (player) {
+                this.playerArray.push(new Player(player, `[data-player="${player}"] i`, playerProfiles[player]))
+            }
+        });
+        this.totalDiceValues.totalDice = gameState.playerArray.length === 4 ? 20 : 15;
+    },
+    determineMostWilds(players) {
+        const numberOfWilds = players.map((player) => player.currentRoll.diceValues.wild);
+        const maxWild = Math.max(...numberOfWilds);
+        const playersWithMostWilds = players.filter((player) => player.currentRoll.diceValues.wild === maxWild);
+        return playersWithMostWilds;
+    },
+    async determineFirstPlayer() {
+        this.playerArray.forEach((player) => {
+            player.currentRoll = new DiceRoll(player.numOfDice);
+        });
+        await this.onInitialRoll?.(this.playerArray);
+        let playersWithMostWilds = this.determineMostWilds(this.playerArray);
+        while (playersWithMostWilds.length > 1) {
+            const playersToReroll = playersWithMostWilds;
+            await this.onBeforeReroll?.(playersToReroll)
+            playersToReroll.forEach((player) => {
+                player.currentRoll = new DiceRoll(player.numOfDice);
+            });
+            playersWithMostWilds = this.determineMostWilds(playersToReroll);
+            const playersEliminated = playersToReroll.filter((player) => !playersWithMostWilds.includes(player));
+            await this.onAfterReroll?.(playersToReroll, playersEliminated);
+        }
+        await this.onWinner?.(playersWithMostWilds[0]);
+        this.currentPlayerIndex = this.playerArray.findIndex((player) => player.playerName === playersWithMostWilds[0].playerName);
+    }
 }
 
 export {DiceRoll, Player, gameState}

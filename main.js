@@ -1,6 +1,32 @@
-import {setupPlayerCountUI, setupFormSelectorsUI, loadGameScreen, setupBidUI} from './modules/ui/gameSetup.js';
+import {setupPlayerCountUI, setupFormSelectorsUI, getOpponents, loadGameScreen, setupBidUI} from './modules/ui/gameSetup.js';
+import {updateDisplay, addPlayerGlow, removePlayerGlow, typeWriter, determineFirstPlayerUI} from './modules/ui/diceUI.js';
 import {gameState, Player, DiceRoll} from './modules/gameObjects.js';
-import {playerProfiles} from './modules/playerBehavior.js';
+import {audio} from './modules/ui/audio.js';
+
+
+const submitButton = document.getElementById('submit');
+submitButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    gameState.initiatePlayerObjects(getOpponents());
+    loadGameScreen();
+    setupBidUI();
+});
+
+document.addEventListener('click', async (e) => {
+    audio.click.play();
+    if (e.target.matches('.information i')) {
+        document.querySelector('.instructions').style.display = 'block';
+    } else if (e.target.matches('#roll')) {
+        determineFirstPlayerUI(gameState)
+        await gameState.determineFirstPlayer()
+    } else if (e.target.matches('#fluff')) {
+
+    } else if (e.target.matches('#bid')) {
+
+    } else if (!document.querySelector('.instructions').contains(e.target)) {
+        document.querySelector('.instructions').style.display = 'none';
+    }
+})
 
 
 setupPlayerCountUI();
@@ -8,25 +34,18 @@ setupFormSelectorsUI();
 
 
 
-function initiatePlayerObjects() {
-    const players = [];
-    const playerNodes = document.querySelectorAll('[data-player]');
-    playerNodes.forEach((player) => {
-        players.push(new Player(player.dataset.player, `[data-player="${player.dataset.player}"] i`, playerProfiles[player.dataset.player]));
-    });
-    gameState.playerArray = players;
-    gameState.totalDiceValues.totalDice = playerNodes.length === 4 ? 20 : 15;
-}
 
-const submitButton = document.getElementById('submit');
 
-submitButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    loadGameScreen();
-    setupBidUI();
-    initiatePlayerObjects();
-});
 
+
+
+
+
+
+
+
+
+   
 
 
 

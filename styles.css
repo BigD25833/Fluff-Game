@@ -20,6 +20,7 @@
     border-radius: 1rem;
     margin: 0 auto;
     padding: 1.5rem;
+    position: relative;
 }
 
 
@@ -27,6 +28,45 @@
 #setup h1 {
     padding-top: 0.5rem;
     text-align: center;
+    position: relative;
+}
+
+#setup .information {
+    font-size: 2rem;
+    position: absolute;
+    right: 0.25rem;
+    color: black;
+}
+
+#setup .information:hover {
+    color: white;
+}
+
+.instructions {
+    padding: 1rem;
+    border-radius: 1.5rem;
+    list-style-position: inside;
+    background-color: rgb(253, 227, 192);
+    position: absolute;
+    border: solid 2px black;
+    display: none;
+}
+
+.instructions * {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+#setup .instructions {
+    right: 5rem;
+    top: -6rem;
+}
+
+.information .instructions {
+    top: 1rem;
+    right: 4rem;
+    font-size: 1rem;
+    color: black;
+    width: 395px;
 }
 
 #setup h2 {
@@ -60,7 +100,7 @@
 
 .game-play {
     display: grid;
-    grid-template-rows: repeat(3, auto);
+    grid-template-rows: repeat(4, auto);
     grid-template-columns: repeat(3, 1fr);
     justify-items: center;
     align-items: center;
@@ -76,6 +116,24 @@
     grid-column: 2/3;
     grid-row: 1/2;
 }
+
+.information {
+    display: inline;
+    grid-column: 3/4;
+    grid-row: 1/2;
+    font-size: 3rem;
+    justify-self: end;
+    align-self: start;
+    color: white;
+    cursor: pointer;
+    position: relative;
+}
+
+.information:hover {
+    color: gray;
+}
+
+
 
 #player1 {
     grid-column: 1/2;
@@ -96,10 +154,22 @@
     justify-self: start;
 }
 
-.main-player {
+#messages {
     grid-row: 3/4;
     grid-column: span 3;
+    background-color: rgb(253, 227, 192);
+    border-radius: 1rem;
+    padding: 0.25rem 0.75rem;
+    font-family: "Roboto Condensed", sans-serif;
+}
+
+.main-player {
+    grid-row: 4/5;
+    grid-column: span 3;
     font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .communications {
@@ -198,9 +268,7 @@
 
     
 
-.main-player > .dice-bids {
-    margin: 0 auto;
-}
+
 
 .main-player .die {
     font-size: 3rem;
@@ -214,7 +282,8 @@
     align-items: center;
     border-radius: 0.5rem;
     padding: 1rem;
-    box-shadow:  0.1em 0.1em rgba(0, 0, 0, 0.8),  inset 0.2em 0.3em 0.75em rgba(231, 203, 177, 0.8), inset -0.1em -0.1em 0.1em rgba(59, 38, 18, 0.8);
+    --turn-glow: transparent;
+    box-shadow: 0.15rem 0.15rem 0.5rem 0.25rem var(--turn-glow), -0.15rem -0.15rem 0.5rem 0.25rem var(--turn-glow), 0.1em 0.1em rgba(0, 0, 0, 0.8),  inset 0.2em 0.3em 0.75em rgba(231, 203, 177, 0.8), inset -0.1em -0.1em 0.1em rgba(59, 38, 18, 0.8);
 }
 
 
@@ -253,8 +322,9 @@
 .controls {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
+    margin-top: 0.75rem;
     align-items: center;
+
 }
 
 #bid-area {
@@ -266,7 +336,8 @@
     border-radius: 1rem;
     padding: 1rem;
     background-color:#8b5a2b;
-    box-shadow:  0.1em 0.1em rgba(0, 0, 0, 0.8),  inset 0.2em 0.3em 0.75em rgba(231, 203, 177, 0.8), inset -0.1em -0.1em 0.1em rgba(59, 38, 18, 0.8);
+    --turn-glow: transparent;
+    box-shadow:  0.15rem 0.15rem 0.5rem 0.25rem var(--turn-glow), -0.15rem -0.15rem 0.5rem 0.25rem var(--turn-glow), 0.1em 0.1em rgba(0, 0, 0, 0.8),  inset 0.2em 0.3em 0.75em rgba(231, 203, 177, 0.8), inset -0.1em -0.1em 0.1em rgba(59, 38, 18, 0.8);
 }
 
 #bid-buttons {
@@ -293,6 +364,9 @@
 
 .button.fluff {
     background-color: #ff7b00;
+    width: 130px;
+    display: flex;
+    justify-content: center;
     margin-right: 4rem;
 }
 
@@ -322,8 +396,11 @@
 
 .button.bid {
     background-color: #0000ff;
+    width: 130px;
+    display: flex;
+    justify-content: center;
     --inset-shadow: rgba(0, 0, 153, 0.8);
-    margin-left: 4rem;
+    margin-left: 4rem; 
 }
 
 .button.bid:active {
@@ -333,9 +410,8 @@
 .center #roll {
     background-color: rgb(189, 53, 12);
     --inset-shadow: rgba(120, 34, 8, 0.8);
-    width: 160px;
+    border-radius: 50%;
     aspect-ratio: 1/1;
-    border-radius: 50% !important;
     display: block;
     margin: 0 auto;
 }
@@ -396,7 +472,7 @@ nav .button:active {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 #display {

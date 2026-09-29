@@ -97,6 +97,13 @@ function setupBidUI() {
     })
 }
 
+function getOpponents() {
+    const opponent1 = document.getElementById('opponent-1');
+    const opponent2 = document.getElementById('opponent-2');
+    const opponent3 = document.getElementById('opponent-3');
+    return [opponent1.value, opponent2.value, opponent3.value, 'mainPlayer'];
+}
+
 function loadGameScreen() {
     const opponent1 = document.getElementById('opponent-1');
     const opponent2 = document.getElementById('opponent-2');
@@ -120,6 +127,21 @@ function loadGameScreen() {
     container.innerHTML = `
         <div class="game-play">
                 ${opponent3.value ? player2 : ''}
+                <div class="information"><i class="fa-regular fa-circle-question"></i>
+                <div class="instructions">
+                <h2>How to Play Fluff</h2>
+                <ol>
+                    <li>Players begin with five dice with a wild face instead of the one. Wilds automatically count as whatever dice value is currently being bid.</li>
+                    <li>To begin, all players roll their dice. The player with the most wilds goes first. If there is a tie, tied players reroll until one player has the most wilds.</li>
+                    <li>To start a round, all players roll their dice and keep them hidden from the other players. The player going first makes a bid which consists of a number and die value (2-6). The bid is an estimation of how many <strong>total dice</strong> of that value have been rolled.</li>
+                    <li>The next player has the option to either raise the bid or challenge the bid. In order to raise, each bid must be higher in number (e.g., three 4s to four 4s) or value (e.g., four 4s to four 5s)</li>
+                    <li>Play continues clockwises until a player challenges the bid and all the dice are revealed. If the actual number of dice is <strong>equal to or greater</strong> than the number bid, the challenger loses a die. If the actual number of dice is <strong>less than</strong> the number bid, the bidder loses a die.</li>
+                    <li>Players have to option to challenge a bid out of turn. If they are wrong, the challenger loses <strong>two</strong> dice. However, if they are right, the bidder still only loses one die.</li>
+                    <li>The player who lost a die in previous round starts the bidding for the next round. If a player loses their final die, they are out of the game and the player to their left starts the next round.</li>
+                    <li>The last player to have a die wins the game.</li>
+                </ol>
+                </div>
+                </div>
                 <div class="player" id="player1" data-player="${player1}">
                     <img src="images/${player1}.JPG" alt="">
                     <h2>${player1}</h2>
@@ -132,7 +154,38 @@ function loadGameScreen() {
                     </div>
                 </div>
                 <div class="center">
-                    <button id="roll" class="button hidden">ROLL!</button>
+                    <button id="roll" class="button">ROLL!</button>
+                    <div class="communications hidden">
+                    <div id="player-1-comm">
+                        <div class="new-bids" data-bids="player-1">
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>  
+                        </div>                        
+                    </div>
+                    <div id="player-2-comm">
+                        <div class="new-bids" data-bids="player-2">
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>
+                        </div>                        
+                    </div>
+                    <button class="button" id="next">NEXT</button>
+                    <div id="player-3-comm">
+                        <div class="new-bids" data-bids="player-3">
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>
+                        </div>
+                    </div>
+                    <div id="main-player-comm" >
+                        <div class="new-bids" data-bids="main-player">
+                            <div class="top-cushion"></div>
+                            <div class="bid-list"></div>
+                            <div class="bottom-cushion"></div>
+                        </div>         
+                    </div>  
+                    </div>
                 </div>
                 <div class="player" id="player3" data-player="${player3}">
                     <img src="images/${player3}.jpg" alt="">
@@ -145,13 +198,16 @@ function loadGameScreen() {
                         <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                     </div>
                 </div>
-                <div id="main-player" class="main-player" data-player="mainPlayer">
+                <div id="messages">Roll the dice to see who goes first!</div>
+                <div id="main-player" class="main-player" >
+                    <div data-player="mainPlayer">
                     <div class="dice-bids">
                         <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                         <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                         <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                         <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
                         <div class="die"><i class="fa-solid fa-square-virus" style="color: rgb(188, 43, 7);"></i></div>
+                    </div>
                     </div>
                     <div class="controls">
                         <button id="fluff" class="fluff button">Fluff</button>
@@ -181,4 +237,4 @@ function loadGameScreen() {
             </div>`;
 }
 
-export {setupPlayerCountUI, setupFormSelectorsUI, loadGameScreen, setupBidUI};
+export {setupPlayerCountUI, setupFormSelectorsUI, loadGameScreen, setupBidUI, getOpponents};
