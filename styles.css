@@ -281,6 +281,7 @@
     flex-direction: column;
     align-items: center;
     border-radius: 0.5rem;
+    width: 256px;
     padding: 1rem;
     --turn-glow: transparent;
     box-shadow: 0.15rem 0.15rem 0.5rem 0.25rem var(--turn-glow), -0.15rem -0.15rem 0.5rem 0.25rem var(--turn-glow), 0.1em 0.1em rgba(0, 0, 0, 0.8),  inset 0.2em 0.3em 0.75em rgba(231, 203, 177, 0.8), inset -0.1em -0.1em 0.1em rgba(59, 38, 18, 0.8);

@@ -29,4 +29,8 @@ function sleep(delay) {
     return new Promise(res => setTimeout(res, delay));
 }
 
-export {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior, sleep}
+function getNextIndex(index, playerArray) {
+    return (index + 1) % playerArray.length
+}
+
+export {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior, sleep, getNextIndex}

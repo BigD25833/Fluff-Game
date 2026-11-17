@@ -1,70 +1,70 @@
 const playerProfiles = {
     Daniel: {
         evaluateBid: [
-            {weight: 3, value: 'strong fluffer'},
-            {weight: 6, value: 'regular fluffer'},
-            {weight: 5, value: 'weak fluffer'}
+            {weight: 6, value: 'strong fluffer'},
+            {weight: 12, value: 'regular fluffer'},
+            {weight: 8, value: 'weak fluffer'}
         ],
         makeBid: [
-            {weight: 4, value: 'bluffer'},
-            {weight: 7, value: 'regular bidder'},
-            {weight: 5, value: 'strong bidder'}
+            {weight: 7, value: 'bluffer'},
+            {weight: 12, value: 'regular bidder'},
+            {weight: 10, value: 'strong bidder'}
         ],
         tendency: [
-                {weight: 3, value: 'aggressive'},
-                {weight: 8, value: 'conservative'},
-                {weight: 1, value: 'risky'}
+                {weight: 8, value: 'aggressive'},
+                {weight: 12, value: 'conservative'},
+                {weight: 3, value: 'risky'}
         ]
     },
     Matthew: {
         evaluateBid: [
-            {weight: 3, value: 'strong fluffer'},
-            {weight: 6, value: 'regular fluffer'},
-            {weight: 5, value: 'weak fluffer'}
+            {weight: 6, value: 'strong fluffer'},
+            {weight: 12, value: 'regular fluffer'},
+            {weight: 9, value: 'weak fluffer'}
         ],
         makeBid: [
-            {weight: 4, value: 'bluffer'},
-            {weight: 7, value: 'regular bidder'},
-            {weight: 5, value: 'strong bidder'}
+            {weight: 2, value: 'bluffer'},
+            {weight: 12, value: 'regular bidder'},
+            {weight: 8, value: 'strong bidder'}
         ],
         tendency: [
-                {weight: 3, value: 'aggressive'},
-                {weight: 8, value: 'conservative'},
-                {weight: 1, value: 'risky'}
+                {weight: 8, value: 'aggressive'},
+                {weight: 12, value: 'conservative'},
+                {weight: 3, value: 'risky'}
         ]
     }, 
     Evelyn: {
         evaluateBid: [
-            {weight: 3, value: 'strong fluffer'},
-            {weight: 6, value: 'regular fluffer'},
-            {weight: 5, value: 'weak fluffer'}
+            {weight: 9, value: 'strong fluffer'},
+            {weight: 12, value: 'regular fluffer'},
+            {weight: 6, value: 'weak fluffer'}
         ],
         makeBid: [
-            {weight: 4, value: 'bluffer'},
-            {weight: 7, value: 'regular bidder'},
-            {weight: 5, value: 'strong bidder'}
+            {weight: 8, value: 'bluffer'},
+            {weight: 12, value: 'regular bidder'},
+            {weight: 8, value: 'strong bidder'}
         ],
         tendency: [
-                {weight: 3, value: 'aggressive'},
-                {weight: 8, value: 'conservative'},
-                {weight: 1, value: 'risky'}
+                {weight: 8, value: 'aggressive'},
+                {weight: 12, value: 'conservative'},
+                {weight: 6, value: 'risky'}
         ]
     },
     Mama: {
         evaluateBid: [
-            {weight: 3, value: 'strong fluffer'},
-            {weight: 6, value: 'regular fluffer'},
-            {weight: 5, value: 'weak fluffer'}
+            {weight: 6, value: 'strong fluffer'},
+            {weight: 12, value: 'regular fluffer'},
+            {weight: 8, value: 'weak fluffer'}
         ],
         makeBid: [
-            {weight: 4, value: 'bluffer'},
-            {weight: 7, value: 'regular bidder'},
-            {weight: 5, value: 'strong bidder'}
+            {weight: 9, value: 'bluffer'},
+            {weight: 12, value: 'regular bidder'},
+            {weight: 8, value: 'strong bidder'}
         ],
         tendency: [
-                {weight: 3, value: 'aggressive'},
-                {weight: 8, value: 'conservative'},
-                {weight: 1, value: 'risky'}
+                {weight: 8, value: 'aggressive'},
+                {weight: 12, value: 'conservative'},
+                {weight: 7, value: 'risky'}
         ]
     }
 }

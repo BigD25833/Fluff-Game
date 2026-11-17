@@ -155,16 +155,16 @@ function loadGameScreen() {
                 </div>
                 <div class="center">
                     <button id="roll" class="button">ROLL!</button>
-                    <div class="communications hidden">
+                    <div id="communication" class="communications hidden">
                     <div id="player-1-comm">
-                        <div class="new-bids" data-bids="player-1">
+                        <div class="new-bids" data-bids="${opponent1.value}">
                             <div class="top-cushion"></div>
                             <div class="bid-list"></div>
                             <div class="bottom-cushion"></div>  
                         </div>                        
                     </div>
                     <div id="player-2-comm">
-                        <div class="new-bids" data-bids="player-2">
+                        <div class="new-bids" data-bids="${opponent3.value ? opponent2.value: ''}">
                             <div class="top-cushion"></div>
                             <div class="bid-list"></div>
                             <div class="bottom-cushion"></div>
@@ -172,14 +172,14 @@ function loadGameScreen() {
                     </div>
                     <button class="button" id="next">NEXT</button>
                     <div id="player-3-comm">
-                        <div class="new-bids" data-bids="player-3">
+                        <div class="new-bids" data-bids="${opponent3.value ? opponent3.value : opponent2.value}">
                             <div class="top-cushion"></div>
                             <div class="bid-list"></div>
                             <div class="bottom-cushion"></div>
                         </div>
                     </div>
                     <div id="main-player-comm" >
-                        <div class="new-bids" data-bids="main-player">
+                        <div class="new-bids" data-bids="mainPlayer">
                             <div class="top-cushion"></div>
                             <div class="bid-list"></div>
                             <div class="bottom-cushion"></div>
@@ -210,7 +210,7 @@ function loadGameScreen() {
                     </div>
                     </div>
                     <div class="controls">
-                        <button id="fluff" class="fluff button">Fluff</button>
+                        <button id="fluff" class="fluff button">Call</button>
                         <div id="bid-area">
                             <h4>Make a bid</h4>
                             <div id="bid-buttons">
@@ -218,7 +218,7 @@ function loadGameScreen() {
                                 <div id="display">1</div>
                                 <button id="plus" class="plus button">+</button>
                                 <div class="dice-bids">
-                                    <div id="die-bid" class="die"><i class="fa-solid fa-dice-two" style="color: rgb(188, 43, 7);"></i></div>
+                                    <div id="die-bid" data-menu-die="two" class="die"><i class="fa-solid fa-dice-two" style="color: rgb(188, 43, 7);"></i></div>
                                     <div id="menu" class=" dice-bids menu hidden">
                                         <div data-menu-die="two" class="die"><i class="fa-solid fa-dice-two" style="color: rgb(188, 43, 7);"></i></div>
                                         <div data-menu-die="three" class="die"><i class="fa-solid fa-dice-three" style="color: rgb(188, 43, 7);"></i></div>
@@ -230,7 +230,7 @@ function loadGameScreen() {
                                 </div>
                             </div>
                         </div>
-                        <button class="bid button">Bid</button>
+                        <button id="bid" class="bid button">Bid</button>
                     </div>
                 </div>
 
