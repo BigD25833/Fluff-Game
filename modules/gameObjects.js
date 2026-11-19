@@ -1,4 +1,4 @@
-import {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior, getNextIndex} from './utilities.js';
+import {bidFactory, getRandomNumber, getRandomArrayItem, getWeightedBehavior, getNextIndex, sleep} from './utilities.js';
 import {playerProfiles} from './playerBehavior.js';
 
 
@@ -71,6 +71,8 @@ class Player {
     loseDie(diceLost) {
         this.numOfDice -= diceLost;
         gameState.totalDiceValues.totalDice -= diceLost;
+        gameState.fluffData.playerLosing = this;
+        gameState.fluffData.diceLost = diceLost;
     }
     calculateRiskFactor(currentBid) {
         return this.currentRoll.probabilityIndex[currentBid.value] - currentBid.number;
@@ -93,10 +95,10 @@ class Player {
             this.fluff(currentBid);
 
         //decided to bid or fluff based on the value of the currentBid's riskFactor and the current player behavior    
-        } else if (riskFactor >= 0.75) {
+        } else if (riskFactor >= 0.25) {
             this.makeBid(currentBid);
 
-        } else if (riskFactor < 0.75 && riskFactor > 0) {
+        } else if (riskFactor < 0.25 && riskFactor > 0) {
             if (currentBehavior === 'strong fluffer') {
                 this.fluff(currentBid);
             } else if (currentBehavior === 'regular fluffer') {
@@ -170,21 +172,22 @@ class Player {
             mediumRiskBids = minRiskBids;
         }
         let chosenBids;
+        let biddingRisk = -0.25;
         if (this.numOfDice <= 2 && gameState.currentBid) {
             behavior = 'regular bidder';
         }
         if (behavior === 'bluffer') {
-            chosenBids = maxRiskBids.filter((bid) => bid.risk > -1);
+            chosenBids = maxRiskBids.filter((bid) => bid.risk > biddingRisk);
             if (!chosenBids.length) {
-                chosenBids = minRiskBids.filter((bid) => bid.risk > -1);
+                chosenBids = minRiskBids.filter((bid) => bid.risk > biddingRisk);
             }
         } else if (behavior === 'strong bidder') {
-            chosenBids = mediumRiskBids.filter((bid) => bid.risk > -1);
+            chosenBids = mediumRiskBids.filter((bid) => bid.risk > biddingRisk);
             if (!chosenBids.length) {
-                chosenBids = minRiskBids.filter((bid) => bid.risk > -1);
+                chosenBids = minRiskBids.filter((bid) => bid.risk > biddingRisk);
             }
         } else if (behavior === 'regular bidder') {
-            chosenBids = minRiskBids.filter((bid) => bid.risk > -1);
+            chosenBids = minRiskBids.filter((bid) => bid.risk > biddingRisk);
         }
         console.log('chosenBids: ' + chosenBids);
         if (!chosenBids.length) {
@@ -197,7 +200,7 @@ class Player {
     refineNextBidByTendency(tendency, chosenBids) {
         console.log('tendency' + tendency)
         let finalBid;
-        if (this.numOfDice <= 2 && gameState.currentBid) {
+        if (this.numOfDice <= 2) {
             tendency = 'conservative';
         }
         if (tendency === 'conservative') {
@@ -218,6 +221,9 @@ class Player {
     }
     refineFirstBidByTendency(tendency, chosenBids, behavior) {
         let finalBid;
+        if (this.numOfDice <= 2) {
+            tendency = 'conservative';
+        }
         if (behavior === 'bluffer') {
             if (tendency === 'conservative') {
                 finalBid = chosenBids[0];
@@ -251,7 +257,11 @@ class Player {
     updateGameWithNewBid(finalBid) {
         let increase; 
         let diceNumber = gameState.totalDiceValues.totalDice;
-        if (diceNumber > 10) {
+        if (diceNumber > 17) {
+            increase = 1.5;
+        } else if (diceNumber > 14) {
+            increase = 1;
+        } else if (diceNumber > 10) {
             increase = 0.75;
         } else if (diceNumber > 8) {
             increase = 0.5;
@@ -284,6 +294,7 @@ class Player {
         const currentBehavior = getWeightedBehavior(this.playerAttributes.makeBid);
         const currentTendency = getWeightedBehavior(this.playerAttributes.tendency);
         let finalBid;
+        let biddingRisk = -0.25;
         if (currentBid) {
             const possibleBids = this.generateLegalNextBids(currentBid);
             const chosenBids = this.chooseBidByBehavior(currentBehavior, possibleBids);
@@ -292,16 +303,18 @@ class Player {
                 return;
             } else {
                 finalBid = this.refineNextBidByTendency(currentTendency, chosenBids);
-                if (this.calculateRiskFactor(finalBid) <= -1) {
+                if (this.calculateRiskFactor(finalBid) <= biddingRisk) {
                     this.makeBid(currentBid)
+                    return;
                 }
             }
         } else {
             const possibleBids = this.generatePossibleFirstBids();
             const chosenBids = this.chooseBidByBehavior(currentBehavior, possibleBids);
             finalBid = this.refineFirstBidByTendency(currentTendency, chosenBids, currentBehavior);
-            if ((gameState.totalDiceValues.totalDice < 18) && (this.calculateRiskFactor(finalBid) < -0.25)) {
+            if ((gameState.totalDiceValues.totalDice < 18) && (this.calculateRiskFactor(finalBid) < 0)) {
                 this.makeBid(currentBid)
+                return;
             }
         }
         if (finalBid.number > gameState.totalDiceValues.totalDice || finalBid.number < 1) {
@@ -344,8 +357,10 @@ class Player {
     }
     async fluff(currentBid) {
         gameState.fluffing = true;
+        gameState.disableButtons?.(['fluff', 'bid']);
         let playerLosing;
         let success;
+        let diceLost;
         console.log('total of dice fluffed' + JSON.stringify(gameState.totalDiceValues[currentBid.value] + gameState.totalDiceValues.wild));
         if ((gameState.totalDiceValues[currentBid.value] + gameState.totalDiceValues.wild) >= currentBid.number) {
             playerLosing = this;
@@ -355,9 +370,14 @@ class Player {
             success = true;
         }
         this.updatePlayerAttributes(success, currentBid);
-        await gameState.onFluffing?.(playerLosing, success, 1);
-        playerLosing.loseDie(1);
-        if (playerLosing.numOfDice === 0) {
+        if (playerLosing.playerName !== gameState.currentPlayer.playerName && playerLosing.playerName !== currentBid.player) {
+            diceLost = 2;
+        } else {
+            diceLost = 1;
+        }
+        await gameState.onFluffing?.(this, playerLosing, success, diceLost);
+        playerLosing.loseDie(diceLost);
+        if (playerLosing.numOfDice <= 0) {
             gameState.currentPlayerIndex = gameState.playerArray.findIndex((player) => player.playerName === playerLosing.playerName);
             if (gameState.playerArray[gameState.playerArray.length -1] === gameState.playerArray[gameState.currentPlayerIndex]) {
                 gameState.currentPlayerIndex = 0;
@@ -367,8 +387,7 @@ class Player {
         } else {
             gameState.currentPlayerIndex = gameState.playerArray.findIndex((player) => player.playerName === playerLosing.playerName);
         }
-        
-        
+        gameState.enableButtons?.(['next']);     
     }
 }
 
@@ -386,8 +405,12 @@ const gameState = {
     currentBid: null,
     playerArray: [],
     fluffing: false,
+    fluffData: {
+        playerLosing: null,
+        diceLost: 0
+    },
     isAutoScrolling: false,
-    mode: 'beginGame',
+    mode: 'determineFirstPlayer',
     currentPlayerIndex: 0,
     get currentPlayer() {
         return this.playerArray[this.currentPlayerIndex];
@@ -404,7 +427,7 @@ const gameState = {
                 this.playerArray.push(new Player(player, `[data-player="${player}"] i`, playerProfiles[player]))
             }
         });
-        this.totalDiceValues.totalDice = gameState.playerArray.length === 4 ? 20 : 15;
+        this.totalDiceValues.totalDice = this.playerArray.length === 4 ? 20 : 15;
     },
     rollDice(players) {
         players.forEach((player) => {
@@ -418,6 +441,7 @@ const gameState = {
         return playersWithMostWilds;
     },
     async determineFirstPlayer() {
+        this.disableButtons?.(['roll']);
         this.rollDice(this.playerArray);
         await this.onInitialRoll?.(this.playerArray);
         let playersWithMostWilds = this.determineMostWilds(this.playerArray);
@@ -431,31 +455,37 @@ const gameState = {
         }
         await this.onWinner?.(playersWithMostWilds[0]);
         this.currentPlayerIndex = this.playerArray.findIndex((player) => player.playerName === playersWithMostWilds[0].playerName);
+        this.mode = 'beginGame';
+        this.enableButtons?.(['roll']);
     },
     async continueRound() {
         while (!this.fluffing && this.currentPlayer.playerName !== 'mainPlayer') {
-            console.log('current player' + this.currentPlayer)
             await this.beforeBidding?.(this.currentPlayer)
-            console.log('players dice' + JSON.stringify(this.currentPlayer.currentRoll.diceRolledValues))
-            this.currentPlayer.evaluateBid(this.currentBid);
+            if (!this.fluffing) {
+                this.disableButtons?.(['fluff'])
+                this.currentPlayer.evaluateBid(this.currentBid);
+            }
             if (!this.fluffing) {
                 await this.afterBidding?.(this.currentPlayer);
                 this.currentPlayerIndex = getNextIndex(this.currentPlayerIndex, this.playerArray);
-            }
-                 
+                this.enableButtons?.(['fluff']);
+                this.fluffOutofTurn(this.currentBid);
+            }       
         }
         if (!this.fluffing) {
+            this.currentBid ? this.enableButtons?.(['fluff', 'bid']) : this.enableButtons?.(['bid']);
             await this.beforeMainPlayerBid?.(this.currentPlayer);
         }  
     },
     async beginNewRound() {
-        gameState.fluffing = false;
+        this.disableButtons?.(['next']);
+        this.fluffing = false;
         this.currentBid = null;
         this.resetDiceValues();
         this.playerArray.forEach((player) => {
             player.bids = [];
         })
-        this.onNewRound?.();
+        this.onNewRound?.(this.fluffData.playerLosing, this.fluffData.diceLost);
         this.rollDice(this.playerArray);
         await this.onReroll?.(this.playerArray);
         await this.continueRound();
@@ -464,17 +494,46 @@ const gameState = {
         this.resetDiceValues();
         this.beginGameUI?.();
         this.rollDice(this.playerArray);
+        this.attachObserver?.(this.currentBid);
+
         await this.onReroll?.(this.playerArray);
         await this.continueRound();
     },
     async mainplayerBid(bid) {
+        this.disableButtons?.(['fluff', 'bid']);
         this.currentPlayer.updateGameWithNewBid(bid);
-        this.afterBidding?.(this.currentPlayer);
+        await this.afterBidding?.(this.currentPlayer);
         this.currentPlayerIndex = getNextIndex(this.currentPlayerIndex, this.playerArray);
+        this.fluffOutofTurn(this.currentBid);
         await this.continueRound()
     },
     async mainPlayerFluff(currentBid) {
-        this.currentPlayer.fluff(currentBid);
+        await this.playerArray.find((player) => player.playerName === 'mainPlayer').fluff(currentBid);
+    },
+    async waitToFluff(player) {
+        const randomTime = (getRandomNumber(13) + 1) * 500;
+        await sleep(randomTime);
+        return player;
+    },
+    async fluffOutofTurn(finalBid) {
+        const playersToFluff = [];
+        for (const player of this.playerArray) {
+            if (player.playerName !== 'mainPlayer' && player.playerName !== finalBid.player && player.playerName !== this.playerArray[getNextIndex(this.playerArray.findIndex((player) => player.playerName === finalBid.player), this.playerArray)].playerName) {
+                const currentBehavior = getWeightedBehavior(player.playerAttributes.evaluateBid);
+                if (player.calculateRiskFactor(finalBid) <= -2) {
+                    playersToFluff.push(player);
+                } else if (player.calculateRiskFactor(finalBid) <= -1.25 && currentBehavior === 'strong fluffer') {
+                    playersToFluff.push(player);
+                }
+            }
+        }
+        if (!playersToFluff.length) return
+        Promise.race(playersToFluff.map((player) => this.waitToFluff(player))).then((player) => {
+            if (!this.fluffing) {
+                player.fluff(this.currentBid)
+            }
+        });
+
     } 
     
 }

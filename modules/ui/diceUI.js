@@ -45,7 +45,9 @@ function updateDisplay(currentRoll, playersDice) {
 function loseDieUI(player, diceLost) {
     const diceArray = document.querySelector(`[data-player="${player.playerName}"] .dice-bids`).children;
     for (let i = 1; i <= diceLost; i++) {
-        diceArray[diceArray.length - 1].remove();
+        if (diceArray.length) {
+            diceArray[diceArray.length - 1].remove();
+        }
     }
 }
 
@@ -122,6 +124,26 @@ function getMainPlayerBid() {
     return bidFactory(bidNumber, bidValue, 'mainPlayer');
 }
 
+function updateBiddingDisplay(currentBid) {
+    if (!currentBid) return;
+    const numberBid = document.getElementById('display');
+    const dieBid = DiceRoll.dicePool.find((die) => die.display === document.querySelector('#die-bid i').className).value;
+    const diceArray = ['two', 'three', 'four', 'five', 'six'];
+    let bidType;
+    if (diceArray.indexOf(currentBid.value) < diceArray.indexOf(dieBid)) {
+        bidType = 'equal';
+        if (Number(numberBid.textContent) < currentBid.number) {
+            numberBid.textContent = currentBid.number;    
+        }
+    } else {
+        bidType = 'plusOne';
+        if (Number(numberBid.textContent) < (currentBid.number + 1)) {
+            numberBid.textContent = currentBid.number + 1;
+        }
+    }
+    return bidType;
+}
+
 function determineFirstPlayerUI(gameState) {
     gameState.onInitialRoll = async (players) => {
         await rollingDiceAnimation(players);
@@ -155,7 +177,6 @@ function determineFirstPlayerUI(gameState) {
         await typeWriter(`${winner.playerName === 'mainPlayer' ? 'You' : winner.playerName} ${winner.playerName === 'mainPlayer' ? 'are' : 'is'} going first`, 50);
         await sleep(1000);
         await typeWriter('Roll the dice to start the game', 50);
-        document.getElementById('roll').classList.add('first');
 
     }
 }
@@ -163,6 +184,18 @@ function determineFirstPlayerUI(gameState) {
 
 
 function biddingUI(gameState) {
+    gameState.disableButtons = (buttonTypes) => {
+        buttonTypes.forEach((button) => {
+            document.getElementById(`${button}`).style.opacity = '0.5';
+            document.getElementById(`${button}`).disabled = true;
+        });
+    }
+    gameState.enableButtons = (buttonTypes) => {
+        buttonTypes.forEach((button) => {
+            document.getElementById(`${button}`).style.opacity = '1';
+            document.getElementById(`${button}`).disabled = false;
+        });
+    }
     gameState.beginGameUI = () => {
         document.getElementById('roll').classList.toggle('hidden');
         document.getElementById('communication').classList.toggle('hidden');
@@ -174,64 +207,91 @@ function biddingUI(gameState) {
                 die.className = 'fa-solid fa-square-virus';
             });
         });
-        updateDisplay(players[players.length - 1].currentRoll, players[players.length - 1].playersDice);
+        if (gameState.playerArray.some((player) => player.playerName === 'mainPlayer')) {
+            updateDisplay(players.find((player) => player.playerName === 'mainPlayer').currentRoll, players.find((player) => player.playerName === 'mainPlayer').playersDice);
+
+        }
+        
     }
     gameState.beforeBidding = async (player) => {
         addPlayerGlow(player);
-        await sleep(5000);
+        await sleep(7000);
     }
-    gameState.afterBidding = (player) => {
+    gameState.afterBidding = async (player) => {
         displayBid(gameState, player, false);
+        updateBiddingDisplay(gameState.currentBid);
+        await sleep(1000);
         removePlayerGlow(player);
     }
     gameState.beforeMainPlayerBid = async (player) => {
         addPlayerGlow(player);
         await typeWriter('Your turn to make a bid', 25);
     }
-    gameState.onFluffing = async (player, success, diceLost) => {
+    gameState.onFluffing = async (playerFluffing, playerLosing, success, diceLost) => {
         const currentPlayer = gameState.currentPlayer;
-        displayBid(gameState, currentPlayer, true);
-        await typeWriter(`${currentPlayer.playerName === 'mainPlayer'? 'You' : currentPlayer.playerName} ${currentPlayer.playerName === 'mainPlayer' ? 'are' : 'is'} calling the bid`, 50);
+        displayBid(gameState, playerFluffing, true);
+        await typeWriter(`${playerFluffing.playerName === 'mainPlayer'? 'You' : playerFluffing.playerName} ${playerFluffing.playerName === 'mainPlayer' ? 'are' : 'is'} calling the bid`, 50);
         gameState.playerArray.forEach((player) => {
             updateDisplay(player.currentRoll, player.playersDice);
         });
+        document.querySelectorAll(`[data-player] i.fa-dice-${gameState.currentBid.value}, [data-player] i.fa-square-virus`).forEach((die) => {
+            die.parentElement.style.backgroundColor = 'gray';
+        });
         await sleep(5000);
+        const dieCount = gameState.totalDiceValues[gameState.currentBid.value] + gameState.totalDiceValues.wild;
         if (success) {
-            if (gameState.currentBid.number > 1) {
-                await typeWriter(`The call is successful. There are not ${gameState.currentBid.number} ${gameState.currentBid.value}${gameState.currentBid.value === 'six' ? 'es' : 's'}`, 50);
+            if (dieCount > 1 || dieCount === 0) {
+                await typeWriter(`The call is successful. There are ${dieCount} ${gameState.currentBid.value}${gameState.currentBid.value === 'six' ? 'es' : 's'}`, 50);
             } else {
-                await typeWriter(`The call is successful. There is not 1 ${gameState.currentBid.value}`, 50);
+                await typeWriter(`The call is successful. There is 1 ${gameState.currentBid.value}`, 50);
             }
         } else {
-            if (gameState.currentBid.number > 1) {
-                await typeWriter(`The call is not successfull. There are at least ${gameState.currentBid.number} ${gameState.currentBid.value}${gameState.currentBid.value === 'six' ? 'es' : 's'}`, 50);
+            if (dieCount > 1) {
+                await typeWriter(`The call is not successfull. There are ${dieCount} ${gameState.currentBid.value}${gameState.currentBid.value === 'six' ? 'es' : 's'}`, 50);
             } else {
-                await typeWriter(`The call is not successfull. There is at least 1 ${gameState.currentBid.value}`, 50);
+                await typeWriter(`The call is not successfull. There is 1 ${gameState.currentBid.value}`, 50);
             }
             
         }
-        //await sleep(5000);
-        loseDieUI(player, diceLost);
+        await sleep(1000);
+        
         //await typeWriter(`${player.playerName === 'mainPlayer' ? 'You' : player.playerName} ${player.playerName === 'mainPlayer' ? 'lose' : 'loses'} a die`, 50);
         //await sleep(3000);
-        if (currentPlayer.playerName !== player.playerName) {
+        if (currentPlayer.playerName !== playerLosing.playerName) {
             removePlayerGlow(currentPlayer);
-            addPlayerGlow(player);
+            addPlayerGlow(playerLosing);
         }
         //await typeWriter(`${player.playerName === 'mainPlayer' ? 'You' : player.playerName} will begin the next round`, 50);
         //await sleep(2000);
         await typeWriter (`Click next to begin a new round`, 50);
     }
-    gameState.onNewRound = () => {
+    gameState.onNewRound = (playerLosing, diceLost) => {
+        loseDieUI(playerLosing, diceLost);
+        document.querySelectorAll('[data-player] .die').forEach((die) => {
+            die.style.backgroundColor = 'rgb(253, 227, 192)';
+        });
         document.querySelectorAll('.bid-list').forEach((list) => {
             list.innerHTML = '';
-        })
+        });
+        document.getElementById('display').textContent = 1;
     }
     gameState.onEliminated = async (player) => {
         removePlayerGlow(player);
         addPlayerGlow(gameState.currentPlayer)
         typeWriter(`${player.playerName === 'mainPlayer' ? 'You' : player.playerName} ${player.playerName === 'mainPlayer' ? 'are' : 'is'} eliminated from the game`);
 
+    }
+    gameState.attachObserver = () => {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                console.log('old value: ' + mutation.oldValue)
+            })
+            updateBiddingDisplay(gameState.currentBid);
+        });
+        const target = document.querySelector('#die-bid');
+        observer.observe(target, {
+            childList: true
+        });
     }
 }
 
@@ -242,5 +302,5 @@ function attachUIHooks(gameState) {
     biddingUI(gameState);
 }
 
-export {rollingDiceAnimation, updateDisplay, addPlayerGlow, removePlayerGlow, typeWriter, attachUIHooks, getMainPlayerBid}
+export {rollingDiceAnimation, updateDisplay, addPlayerGlow, removePlayerGlow, typeWriter, attachUIHooks, getMainPlayerBid, updateBiddingDisplay}
 

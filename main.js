@@ -3,9 +3,11 @@ import {updateDisplay, addPlayerGlow, removePlayerGlow, typeWriter, attachUIHook
 import {gameState, Player, DiceRoll} from './modules/gameObjects.js';
 import {audio} from './modules/ui/audio.js';
 
+window.gameStateDebug = gameState;
 
 const submitButton = document.getElementById('submit');
 submitButton.addEventListener('click', (e) => {
+    audio.click.play();
     gameState.initiatePlayerObjects(getOpponents());
     loadGameScreen();
     setupBidUI();
@@ -24,23 +26,26 @@ submitButton.addEventListener('click', (e) => {
 });
 
 document.addEventListener('click', async (e) => {
-    audio.click.play();
     if (e.target.matches('.information i')) {
+        audio.click.play();
         document.querySelector('.instructions').style.display = 'block';
     } else if (e.target.matches('#roll')) {
-        if (!e.target.classList.contains('first')) {
+        if (gameState.mode === 'determineFirstPlayer') {
+            audio.click.play();
             await gameState.determineFirstPlayer()
-        } else {
+        } else if (gameState.mode === 'beginGame') {
+            audio.click.play();
             await gameState.beginGame()
         }
-        
     } else if (e.target.matches('#fluff')) {
-        gameState.mainPlayerFluff(gameState.currentBid);
+        audio.click.play();
+        await gameState.mainPlayerFluff(gameState.currentBid);
     } else if (e.target.matches('#bid')) {
-        gameState.mainplayerBid(getMainPlayerBid());
+        audio.click.play();
+        await gameState.mainplayerBid(getMainPlayerBid());
     } else if (e.target.matches('#next')) {
-        gameState.beginNewRound();
-
+        audio.click.play();
+        await gameState.beginNewRound();
     } else if (!document.querySelector('.instructions').contains(e.target)) {
         document.querySelector('.instructions').style.display = 'none';
     }
@@ -64,7 +69,12 @@ setupFormSelectorsUI();
     making it impossible to make an illegal bid
     make it impossible to press a wrong button
     infininte loop at the end of bids
-    poor bidding decision when down to one or two dice */
+    poor bidding decision when down to one or two dice
+    compare objects rather than properties
+    highlight dice fluffed
+    keep dice until next round
+    find a different icon for wild
+    Evelyn's dice not hiding after mainPlayer goes out */
 
 
 

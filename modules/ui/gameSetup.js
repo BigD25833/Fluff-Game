@@ -1,3 +1,7 @@
+import {audio} from './audio.js';
+import {gameState} from '../gameObjects.js';
+import {updateBiddingDisplay} from './diceUI.js';
+
 function updateFormSelectors(selectors) {    
     const playerArray = ['Daniel', 'Matthew', 'Mama', 'Evelyn'];
     const chosen = new Set([...selectors].map((select) => select.value).filter((value) => value !== ''));
@@ -29,6 +33,7 @@ function setupPlayerCountUI() {
     const dynamicOption = document.getElementById('dynamic-option');
     radioButtons.forEach((radio) => {
         radio.addEventListener('change', () => {
+            audio.click.play();
             const value = radio.value;
             dynamicOption.style.display = value === '4' ? 'block' : 'none';
         });
@@ -40,10 +45,14 @@ function setupFormSelectorsUI() {
     const resetButton = document.getElementById('reset');
 
     selectors.forEach((selector) => {
-        selector.addEventListener('change', () => updateFormSelectors(selectors));
+        selector.addEventListener('change', () => {
+            audio.click.play();
+            updateFormSelectors(selectors)
+        });
     });
 
     resetButton.addEventListener('click', () => {
+        audio.click.play();
         selectors.forEach((selector) => {
             selector.value = '';
         })
@@ -65,11 +74,13 @@ function setupBidUI() {
 
     //Add event listeners to the bidding buttons
     menuArrow.addEventListener('click', () => {
+        audio.click.play();
         menuPopup.classList.toggle('hidden');
     });
 
     menuDice.forEach((die) => {
         die.addEventListener('click', () => {
+            audio.click.play();
             const dieFace = die.innerHTML;
             const valueOfDieBid = die.dataset.menuDie;
             dieBid.innerHTML = dieFace;
@@ -79,23 +90,33 @@ function setupBidUI() {
     });
 
     minusButton.addEventListener('click', () => {
+        audio.click.play();
         let valueOfNumberBid = Number(numberBid.textContent);
         if (valueOfNumberBid === 1) {
             return
         }
         valueOfNumberBid--;
+        const bidType = updateBiddingDisplay(gameState.currentBid);
+        if (bidType === 'equal' && valueOfNumberBid < gameState.currentBid.number) {
+            return
+        } else if (bidType === 'plusOne' && valueOfNumberBid < (gameState.currentBid.number + 1)) {
+            return
+        }
         numberBid.textContent = valueOfNumberBid;
     })
 
     plusButton.addEventListener('click', () => {
+        audio.click.play();
     let valueOfNumberBid = Number(numberBid.textContent);
     if (valueOfNumberBid === 20) {
         return
     }
     valueOfNumberBid++;
     numberBid.textContent = valueOfNumberBid;
-    })
+    });
 }
+
+
 
 function getOpponents() {
     const opponent1 = document.getElementById('opponent-1');
@@ -170,7 +191,7 @@ function loadGameScreen() {
                             <div class="bottom-cushion"></div>
                         </div>                        
                     </div>
-                    <button class="button" id="next">NEXT</button>
+                    <button class="button" id="next" disabled>NEXT</button>
                     <div id="player-3-comm">
                         <div class="new-bids" data-bids="${opponent3.value ? opponent3.value : opponent2.value}">
                             <div class="top-cushion"></div>
@@ -210,7 +231,7 @@ function loadGameScreen() {
                     </div>
                     </div>
                     <div class="controls">
-                        <button id="fluff" class="fluff button">Call</button>
+                        <button id="fluff" class="fluff button" disabled>Call</button>
                         <div id="bid-area">
                             <h4>Make a bid</h4>
                             <div id="bid-buttons">
@@ -230,7 +251,7 @@ function loadGameScreen() {
                                 </div>
                             </div>
                         </div>
-                        <button id="bid" class="bid button">Bid</button>
+                        <button id="bid" class="bid button" disabled>Bid</button>
                     </div>
                 </div>
 
