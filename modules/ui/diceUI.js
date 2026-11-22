@@ -106,6 +106,11 @@ async function displayBid(gameState, player, fluffing) {
         newBid.className = 'die';
         newBid.innerHTML = `${currentBid.number}<i class="${DiceRoll.getDisplay(currentBid.value)}" style="color: rgb(188, 43, 7);"></i>`;
     }
+    const currentBorderBid = document.querySelector('.current-bid');
+    if (currentBorderBid) {
+        currentBorderBid.classList.remove('current-bid');
+    }
+    newBid.classList.add('current-bid');
     bidList.appendChild(newBid);
     gameState.isAutoScrolling = true;
     await sleep(40);
@@ -237,7 +242,7 @@ function biddingUI(gameState) {
         document.querySelectorAll(`[data-player] i.fa-dice-${gameState.currentBid.value}, [data-player] i.fa-square-virus`).forEach((die) => {
             die.parentElement.style.backgroundColor = 'gray';
         });
-        await sleep(5000);
+       // await sleep(5000);
         const dieCount = gameState.totalDiceValues[gameState.currentBid.value] + gameState.totalDiceValues.wild;
         if (success) {
             if (dieCount > 1 || dieCount === 0) {

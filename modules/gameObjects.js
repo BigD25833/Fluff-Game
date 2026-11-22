@@ -46,13 +46,21 @@ class DiceRoll {
    
     }
     calculateProbabilities() {
-        const probabilityFactor = (gameState.totalDiceValues.totalDice - this.numOfDice) / 3;
+        let probabilityFactor;
+        if (gameState.totalDiceValues.totalDice <= 6) {
+            probabilityFactor = Math.floor((gameState.totalDiceValues.totalDice - this.numOfDice) / 3);
+            if (probabilityFactor < 1) {
+                probabilityFactor = 1;
+            }
+        } else {
+            probabilityFactor = Math.ceil((gameState.totalDiceValues.totalDice - this.numOfDice) / 3);
+        }
         this.probabilityIndex = {
-            two: Math.ceil(this.diceValues.wild + this.diceValues.two + probabilityFactor),
-            three: Math.ceil(this.diceValues.wild + this.diceValues.three + probabilityFactor),
-            four: Math.ceil(this.diceValues.wild + this.diceValues.four + probabilityFactor),
-            five: Math.ceil(this.diceValues.wild + this.diceValues.five + probabilityFactor),
-            six: Math.ceil(this.diceValues.wild + this.diceValues.six + probabilityFactor)
+            two: this.diceValues.wild + this.diceValues.two + probabilityFactor,
+            three: this.diceValues.wild + this.diceValues.three + probabilityFactor,
+            four: this.diceValues.wild + this.diceValues.four + probabilityFactor,
+            five: this.diceValues.wild + this.diceValues.five + probabilityFactor,
+            six: this.diceValues.wild + this.diceValues.six + probabilityFactor
         }
     }
 }
@@ -116,7 +124,7 @@ class Player {
                 this.makeBid(currentBid);
             }
 
-        } else if (riskFactor < 0 && riskFactor > -1.5) {
+        } else if (riskFactor < 0 && riskFactor > -0.75) {
             if (currentBehavior === 'strong fluffer') {
                 this.fluff(currentBid);
             } else if (currentBehavior === 'regular fluffer') {
@@ -125,7 +133,7 @@ class Player {
                 this.makeBid(currentBid);
             }    
 
-        } else if (riskFactor <= -1.5) {
+        } else if (riskFactor <= -0.75) {
             this.fluff(currentBid);
         }
     }
@@ -172,10 +180,17 @@ class Player {
             mediumRiskBids = minRiskBids;
         }
         let chosenBids;
-        let biddingRisk = -0.25;
-        if (this.numOfDice <= 2 && gameState.currentBid) {
-            behavior = 'regular bidder';
+        let biddingRisk;
+        if (gameState.currentBid && this.currentRoll.diceValues[gameState.currentBid.value] >=2 || gameState.totalDiceValues.totalDice <= 8) {
+            biddingRisk = -1;
+        } else {
+            biddingRisk = -0.75;
         }
+     /*   if (gameState.totalDiceValues.totalDice <= 10) {
+            if (behavior === 'strong bidder') {
+                behavior = getRandomNumber(2) === 0 ? 'bluffer' : 'regular bidder'; 
+            }    
+        } */
         if (behavior === 'bluffer') {
             chosenBids = maxRiskBids.filter((bid) => bid.risk > biddingRisk);
             if (!chosenBids.length) {
@@ -200,8 +215,10 @@ class Player {
     refineNextBidByTendency(tendency, chosenBids) {
         console.log('tendency' + tendency)
         let finalBid;
-        if (this.numOfDice <= 2) {
-            tendency = 'conservative';
+        if (this.bids.length || gameState.totalDiceValues.totalDice < 8) {
+            if (tendency === 'risky') {
+                tendency = getRandomNumber(2) === 0 ? 'conservative' : 'aggressive';
+            }
         }
         if (tendency === 'conservative') {
             const previousValues = this.bids.map((bid) => bid.value);
@@ -210,10 +227,15 @@ class Player {
         } else if (tendency === 'aggressive') {
             finalBid = chosenBids[chosenBids.length -1];
         } else if (tendency === 'risky') {
-            finalBid = getRandomArrayItem(chosenBids);
-            finalBid.number += getRandomNumber(2);
-            if (this.calculateRiskFactor(finalBid) >= 2) {
-                finalBid.number = Math.round(this.currentRoll.probabilityIndex[finalBid.value]);
+            finalBid = {...getRandomArrayItem(chosenBids)};
+            if (finalBid.number > gameState.currentBid.number) {
+                finalBid.number += 1;
+            } else {
+                finalBid.number += getRandomNumber(2) + 1;
+            }
+            if (gameState.currentBid && this.currentRoll.diceValues[finalBid.value] / finalBid.number < 0.375) {
+                console.log('conservative options')
+                return this.refineNextBidByTendency('conservative', chosenBids)
             }
         }
         return finalBid;
@@ -221,8 +243,15 @@ class Player {
     }
     refineFirstBidByTendency(tendency, chosenBids, behavior) {
         let finalBid;
-        if (this.numOfDice <= 2) {
-            tendency = 'conservative';
+        if (gameState.totalDiceValues.totalDice <= 10 && gameState.totalDiceValues.totalDice > 4) {
+            if (tendency === 'risky') {
+                tendency = getRandomNumber(2) === 0 ? 'conservative' : 'aggressive';
+            }
+        }
+        if (gameState.totalDiceValues.totalDice <= 4 && behavior === 'bluffer') {
+            if (tendency === 'risky') {
+                tendency = getRandomNumber(2) === 0 ? 'conservative' : 'aggressive';
+            }     
         }
         if (behavior === 'bluffer') {
             if (tendency === 'conservative') {
@@ -257,18 +286,14 @@ class Player {
     updateGameWithNewBid(finalBid) {
         let increase; 
         let diceNumber = gameState.totalDiceValues.totalDice;
-        if (diceNumber > 17) {
-            increase = 1.5;
-        } else if (diceNumber > 14) {
-            increase = 1;
-        } else if (diceNumber > 10) {
+        if (diceNumber > 14) {
             increase = 0.75;
         } else if (diceNumber > 8) {
-            increase = 0.5;
+            increase = 0.65;
         } else if (diceNumber > 4) {
-            increase = 0.25;
+            increase = 0.35;
         } else {
-            increase = 0.1;
+            increase = 0.25;
         }
         if ((!gameState.currentBid && finalBid.number >= 8) || (gameState.currentBid && (finalBid.number - gameState.currentBid.number >= 3))) {
             gameState.playerArray.forEach((player) => {
@@ -279,8 +304,8 @@ class Player {
         } else {
             gameState.playerArray.forEach((player) => {
                 if (player.playerName !== finalBid.player) {
-                    if (player.bids.length >= 2 && increase > 0.25) {
-                        player.currentRoll.probabilityIndex[finalBid.value] += 0.25;
+                    if (player.bids.length >= 1 && increase > 0.6) {
+                        player.currentRoll.probabilityIndex[finalBid.value] += 0.6;
                     } else {
                         player.currentRoll.probabilityIndex[finalBid.value] += increase;
                     }
@@ -294,7 +319,6 @@ class Player {
         const currentBehavior = getWeightedBehavior(this.playerAttributes.makeBid);
         const currentTendency = getWeightedBehavior(this.playerAttributes.tendency);
         let finalBid;
-        let biddingRisk = -0.25;
         if (currentBid) {
             const possibleBids = this.generateLegalNextBids(currentBid);
             const chosenBids = this.chooseBidByBehavior(currentBehavior, possibleBids);
@@ -303,10 +327,7 @@ class Player {
                 return;
             } else {
                 finalBid = this.refineNextBidByTendency(currentTendency, chosenBids);
-                if (this.calculateRiskFactor(finalBid) <= biddingRisk) {
-                    this.makeBid(currentBid)
-                    return;
-                }
+                
             }
         } else {
             const possibleBids = this.generatePossibleFirstBids();
@@ -317,6 +338,16 @@ class Player {
                 return;
             }
         }
+        let biddingRisk;
+        if (gameState.currentBid && this.currentRoll.diceValues[gameState.currentBid.value] >=2 || gameState.totalDiceValues.totalDice <= 8) {
+            biddingRisk = -1;
+        } else {
+            biddingRisk = -0.75;
+        }
+        if (this.calculateRiskFactor(finalBid) <= biddingRisk) {
+                    this.makeBid(currentBid)
+                    return;
+                }
         if (finalBid.number > gameState.totalDiceValues.totalDice || finalBid.number < 1) {
             finalBid.number = 1;
         }
@@ -521,9 +552,13 @@ const gameState = {
             if (player.playerName !== 'mainPlayer' && player.playerName !== finalBid.player && player.playerName !== this.playerArray[getNextIndex(this.playerArray.findIndex((player) => player.playerName === finalBid.player), this.playerArray)].playerName) {
                 const currentBehavior = getWeightedBehavior(player.playerAttributes.evaluateBid);
                 if (player.calculateRiskFactor(finalBid) <= -2) {
+                    console.log(player.calculateRiskFactor(finalBid))
                     playersToFluff.push(player);
                 } else if (player.calculateRiskFactor(finalBid) <= -1.25 && currentBehavior === 'strong fluffer') {
-                    playersToFluff.push(player);
+                    if (player.currentRoll.diceValues[finalBid.value] / finalBid.number <= 0.15) {
+                        console.log(player.calculateRiskFactor(finalBid))
+                        playersToFluff.push(player);
+                    }
                 }
             }
         }
