@@ -352,6 +352,7 @@
 
 
 .button {
+    color: black;
     font-family: "Roboto Condensed", sans-serif;
     --inset-shadow: rgba(179, 65, 0, 0.8);
     font-size: 1.75rem;;
