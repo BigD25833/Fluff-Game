@@ -496,43 +496,122 @@ nav .button:active {
 
 @media (max-width: 600px) {
     html {
-        font-size: 8px;
+        font-size: 14px;
     }
     img {
         display: none;
     }
-    #player1, #player2, #player3 {
-        justify-self: center;
-    }
     .player {
-        width: 89px;
+        justify-content: start;
     }
     .player .dice-bids {
         flex-direction: column;
     }
     .game-play {
-        width: fit-content;
-        height: fit-content;
+        width: 90%;
+        height: 95%;
         align-content: center;
-        grid-template-columns : 1fr 2.5fr 1fr;
-    }
-    .button#fluff {
-        width: fit-content;
-    }
-    .button#bid {
-        width: fit-content;
+        grid-template-columns : 1fr 1fr 1fr;
+        grid-template-rows: (repeat(6, auto));
+        grid-template-areas: 
+            ". . information"
+            "player1 player2 player3"
+            "display display display"
+            "messages messages messages"
+            "main main main"
+            "buttons buttons buttons";
+        gap: 0.75rem;
     }
     .information {
-        margin-right: 2rem;
+        grid-area: information;
+        font-size: 10px;
+        justify-self: end;
+
+    }
+
+    .player h2 {
+        font-size: 14px;
+
+    }
+
+    #player1 {
+        grid-area: player1;
+        width: 100px;
+        height: 208px;
+
+    }
+    
+    #player2 {
+        grid-area: player2;
+        width: 100px;
+        height: 208px;
+
+    }
+    
+    #player3 {
+        grid-area: player3;
+        width: 100px;
+        height: 208px;
+    }
+
+    .center {
+        grid-area: display;
+        height: 236.15px;
+        display: flex;
+        align-items: center;
+    }
+
+    #messages {
+        grid-area: messages;
+    }
+
+    .main-player {
+        grid-area: main;
+
+    }
+
+    .bid-buttons {
+        width: 100%;
+        grid-area: buttons;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .button#fluff {
+        width: fit-content;
+        margin-right: 0;
+    }
+
+    .button#bid {
+        width: fit-content;
+        margin-left: 0;
     }
     .new-bids {
-        height: 54px;
+        height: 70px;
     }
     .current-bid {
-        border-width: 2px;
+        border-width: 5px;
     }
     .dice-bids .menu {
-        bottom: 43px;
+        bottom: 75px;
+        right: -25px;
+    }
+
+    #menu .die {
+        font-size: 2.5rem;
+    }
+    .new-bids {
+        font-size: 18px;
+        height: 110px;
+    }
+     .new-bids .die {
+        font-size: 2.5rem;
+       
+    }
+    #setup {
+        width: 95vw;
+        font-size: 12px;
     }
 }
 

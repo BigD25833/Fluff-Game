@@ -231,7 +231,7 @@ function loadGameScreen() {
                     </div>
                     </div>
                     <div class="controls">
-                        <button id="fluff" class="fluff button" disabled>Call</button>
+                        ${window.innerWidth < 600 ? '' : '<button id="fluff" class="fluff button" disabled>Call</button>' }
                         <div id="bid-area">
                             <h4>Make a bid</h4>
                             <div id="bid-buttons">
@@ -251,9 +251,11 @@ function loadGameScreen() {
                                 </div>
                             </div>
                         </div>
-                        <button id="bid" class="bid button" disabled>Bid</button>
+                        ${window.innerWidth < 600 ? '' : '<button id="bid" class="bid button" disabled>Bid</button>'}
                     </div>
+                    
                 </div>
+                ${window.innerWidth >= 600 ? '' : '<div class="bid-buttons"><button id="fluff" class="fluff button" disabled>Call</button><button id="bid" class="bid button" disabled>Bid</button></div>'}
 
             </div>`;
 }
