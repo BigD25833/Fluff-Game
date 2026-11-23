@@ -80,13 +80,21 @@ function removePlayerGlow(player) {
 async function typeWriter(string, delay) {
     const messageBoard = document.getElementById('messages');
     messageBoard.textContent = '';
-    for (let i = 0; i < string.length; i++) {
-        messageBoard.textContent += string[i]
-        audio.typeWriter.play();
-        await sleep(delay)
-        audio.typeWriter.pause();
-        audio.typeWriter.currentTime = 0;
+    if (window.innerWidth >= 600) {
+        for (let i = 0; i < string.length; i++) {
+            messageBoard.textContent += string[i]
+            audio.typeWriter.play();
+            await sleep(delay)
+            audio.typeWriter.pause();
+            audio.typeWriter.currentTime = 0;
+        }
+    } else {
+        for (let i = 0; i < string.length; i++) {
+            messageBoard.textContent += string[i];
+            await sleep(delay);
+        }
     }
+    
 }
 
 async function displayBid(gameState, player, fluffing) {
